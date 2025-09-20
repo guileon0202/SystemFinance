@@ -1,20 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Register from './pages/Register'; // Importa o novo componente
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components'; // Importante
+import { AuthProvider } from './contexts/AuthContext';
 
-import './App.css'; // Mantenha ou remova o CSS padrão
+import AppRoutes from './routes';
+import GlobalStyle from './styles/global';
+import theme from './styles/theme'; // Importante
 
 function App() {
   return (
-    <Router>
-      <nav>
-        <Link to="/register">Cadastre-se</Link>
-      </nav>
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        {/* Futuras rotas para Login, Dashboard, etc. */}
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}> {/* Precisa estar aqui */}
+        <AuthProvider>
+          <GlobalStyle />
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 
