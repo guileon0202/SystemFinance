@@ -1,0 +1,151 @@
+/* src/pages/Register.css */
+
+/* Importação da fonte para o Register.css também, se não estiver já no App.css e for usado globalmente */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa; /* Fundo branco/cinza claro */
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.register-form {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Sombra mais suave */
+  width: 100%;
+  max-width: 450px;
+  border: 1px solid #e0e0e0; /* Borda mais suave */
+  text-align: center; /* Centraliza os elementos de texto por padrão */
+}
+
+.form-header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centraliza o logo */
+  margin-bottom: 2rem;
+  gap: 0.5rem;
+  color: #28a745; /* Cor verde para o logo */
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.logo-icon {
+    font-size: 2rem;
+}
+
+
+.register-form h3 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: #212529;
+}
+
+.subtitle {
+  color: #6c757d;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.input-group {
+  margin-bottom: 1.25rem;
+  text-align: left; /* Alinha labels e inputs à esquerda dentro do grupo */
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #28a745; /* Cor verde no foco */
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 3rem; /* Espaço para o ícone */
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #28a745; /* Cor verde para o botão principal */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem; /* Espaçamento após o último input */
+}
+
+.submit-btn:hover {
+  background-color: #218838;
+}
+
+.form-footer {
+  margin-top: 1.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.form-footer a {
+  color: #28a745;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+.back-link {
+  margin-top: 2rem; /* Mais espaçamento do formulário */
+}
+
+.back-link a {
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex; /* Para alinhar o ícone de seta */
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+}

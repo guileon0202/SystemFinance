@@ -1,0 +1,152 @@
+/* src/pages/Login.css */
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.login-form {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 450px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.login-form .form-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  gap: 0.5rem;
+  color: #007bff; /* Cor principal azul */
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.login-form .logo-icon {
+    font-size: 2.5rem;
+    padding: 0.5rem;
+    background-color: #e7f1ff; /* Fundo azul claro para o ícone */
+    border-radius: 8px;
+    line-height: 1;
+}
+
+.login-form h3 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: #212529;
+}
+
+.login-form .subtitle {
+  color: #6c757d;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.login-form .input-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.login-form .input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.login-form .input-group input {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.login-form .input-group input:focus {
+  outline: none;
+  border-color: #007bff; /* Cor azul no foco */
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.login-form .password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-form .password-input-wrapper input {
+  padding-right: 3rem;
+}
+
+.login-form .password-toggle-icon {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.login-form .submit-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #007bff; /* Cor principal azul */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.login-form .submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.login-form .form-footer {
+  margin-top: 1.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.login-form .form-footer a {
+  color: #007bff; /* Cor principal azul */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-form .form-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Reutilizando estilos do Register.css para consistência */
+.back-link {
+  margin-top: 2rem;
+}
+
+.back-link a {
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+}

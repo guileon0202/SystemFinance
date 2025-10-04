@@ -1,0 +1,171 @@
+/* src/App.css */
+
+/* Importando uma fonte moderna do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Reset básico e configurações globais */
+body {
+  margin: 0;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa;
+  color: #343a40;
+}
+
+/* O container principal que centraliza o conteúdo */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.header nav {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Botões e Links com aparência de botão */
+button,
+.header nav a {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #e9ecef;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white !important; /* !important para garantir a cor do texto no link */
+  border: 1px solid #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-primary-solid {
+  background-color: #007bff;
+  color: white;
+  font-size: 1.1rem;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-primary-solid:hover {
+    background-color: #0056b3;
+}
+
+/* Seção Hero */
+.hero {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+
+.hero h1 strong {
+  color: #007bff;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: #6c757d;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+/* Seção Features (Cards) */
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.feature-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  flex-basis: 30%;
+  border: 1px solid #e9ecef;
+}
+
+.icon-placeholder {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #212529;
+}
+
+.feature-card p {
+  color: #6c757d;
+}
+
+/* Seção CTA (Call to Action) */
+.cta-section {
+    background-color: #e9ecef;
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    margin: 4rem 0;
+}
+
+.cta-section h2 {
+    font-size: 2rem;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer */
+.footer {
+    text-align: right;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
