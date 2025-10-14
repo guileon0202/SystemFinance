@@ -1,8 +1,9 @@
 // src/pages/Register.js
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './Register.css'; // <<--- ESTA LINHA É A MAIS IMPORTANTE!
+import { Link, useNavigate } from 'react-router-dom'; // 1. Importe o useNavigate
+import axios from 'axios'; // 2. Importe o axios
+import './Register.css';
 
 const Register = () => {
   const [fullName, setFullName] = useState('');
@@ -11,15 +12,39 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState(''); // 3. Estado para guardar mensagens de erro
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate(); // Hook para navegar entre páginas
+
+  // 4. A função agora é "async" para poder esperar a resposta do backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Limpa erros anteriores
+
     if (password !== confirmPassword) {
-      alert('As senhas não coincidem!');
+      setError('As senhas não coincidem!');
       return;
     }
-    console.log({ fullName, email, password });
-    alert('Conta criada com sucesso! (Funcionalidade de backend ainda não implementada)');
+
+    try {
+      // 5. ENVIANDO OS DADOS COM O AXIOS
+      // ATENÇÃO: Verifique se a URL abaixo corresponde à porta e rota do seu backend!
+      await axios.post('http://localhost:3000/api/users/register', {
+        nome: fullName, // Verifique se os nomes dos campos batem com o que seu backend espera
+        email: email,
+        senha: password,
+      });
+
+      // Se a requisição deu certo:
+      alert('Conta criada com sucesso! Você será redirecionado para o login.');
+      navigate('/login'); // Redireciona o usuário para a página de login
+
+    } catch (err) {
+      // Se a requisição deu erro:
+      console.error("Erro ao registrar:", err);
+      // Pega a mensagem de erro do backend, se houver, ou mostra uma mensagem genérica
+      setError(err.response?.data?.message || 'Ocorreu um erro ao criar a conta. Tente novamente.');
+    }
   };
 
   return (
@@ -32,6 +57,9 @@ const Register = () => {
 
         <h3>Criar conta</h3>
         <p className="subtitle">Preencha os dados abaixo para começar a usar</p>
+
+        {/* 6. Exibindo a mensagem de erro, se houver */}
+        {error && <p className="error-message">{error}</p>}
 
         <div className="input-group">
           <label htmlFor="fullName">Nome completo</label>

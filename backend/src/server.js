@@ -1,25 +1,32 @@
+// arquivo: backend/src/server.js (COMPLETO E ATUALIZADO)
+
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
-// 1. Instalar e configurar o dotenv para carregar variáveis de ambiente
+// Carrega as variáveis de ambiente do arquivo .env
 require('dotenv').config();
 
-// Define a porta do servidor, pegando da variável de ambiente ou usando 3001 como padrão
+// Define a porta do servidor
 const port = process.env.PORT || 3000;
 
-// 2. Middleware para processar JSON nas requisições HTTP
-// Isso permite que o servidor entenda o corpo das requisições POST e PUT
+// --- Middlewares Essenciais ---
+// Habilita o CORS para permitir que o frontend se comunique com o backend
+app.use(cors());
+// Habilita o Express para entender o corpo das requisições em formato JSON
 app.use(express.json());
 
-// 3. Importar o arquivo de rotas que você criou
+// --- Importação das Rotas ---
 const userRoutes = require('./routes/userRoutes');
+const transactionRoutes = require('./routes/transactionsRoutes'); // <-- LINHA ADICIONADA
 
-// 4. Usar as rotas
-// O primeiro argumento '/api/users' define o prefixo para todas as rotas deste arquivo.
-// Então, a rota de cadastro será acessada em http://localhost:3001/api/users/register
+// --- Uso das Rotas ---
+// Todas as rotas de usuário usarão o prefixo /api/users
 app.use('/api/users', userRoutes);
+// Todas as rotas de transação usarão o prefixo /api/transactions
+app.use('/api/transactions', transactionRoutes); // <-- LINHA ADICIONADA
 
-// 5. Iniciar o servidor
+// --- Iniciar o Servidor ---
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });

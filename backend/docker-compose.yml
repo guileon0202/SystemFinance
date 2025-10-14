@@ -1,0 +1,20 @@
+# Arquivo: docker-compose.yml (CORRIGIDO)
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      # As 3 linhas abaixo precisam de 2 espaços no início
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: systemfinance
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
