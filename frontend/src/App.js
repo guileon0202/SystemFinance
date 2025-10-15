@@ -1,4 +1,4 @@
-// arquivo: frontend/src/App.js (COMPLETO E ATUALIZADO)
+// arquivo: frontend/src/App.js
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
@@ -7,11 +7,11 @@ import './App.css';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-// 1. IMPORTE a nova página de transações
 import TransactionsPage from './pages/TransactionsPage';
+import BalanceamentoPage from './pages/BalanceamentoPage';
+import FeedbackPage from './pages/FeedbackPage';
 
 // --- Componente da Página Inicial ---
-// (Esta parte do código não muda)
 function HomePage() {
   return (
     <div className="container">
@@ -58,8 +58,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* 2. ADICIONE a nova rota para a página de transações */}
         <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/balanceamento" element={<BalanceamentoPage />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
       </Routes>
     </Router>
   );

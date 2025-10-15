@@ -1,10 +1,8 @@
-// arquivo: frontend/src/pages/TransactionsPage.js (VERSÃO FINAL COMPLETA)
+// arquivo: frontend/src/pages/TransactionsPage.js (VERSÃO FINAL E SEGURA - CORRIGIDA)
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // <-- LINHA CORRIGIDA
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
-// 1. CORREÇÃO: O CSS deve vir do arquivo da própria página
+import api from '../services/api';
 import './TransactionsPage.css';
 
 const TransactionsPage = () => {
@@ -18,6 +16,7 @@ const TransactionsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Lógica para verificar se o usuário está logado
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -27,7 +26,6 @@ const TransactionsPage = () => {
     }
   }, [navigate]);
 
-  // 2. CORREÇÃO: Conectamos esta função ao botão "Sair"
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
@@ -50,19 +48,11 @@ const TransactionsPage = () => {
         descricao,
         valor: parseFloat(valor),
         tipo: tipoParaBackend,
-        // Incluindo os campos que faltavam no envio para a API
         data,
         categoria,
-        userId: user.id
       };
       
-      const token = localStorage.getItem('token');
-      
-      await axios.post('http://localhost:3000/api/transactions', transactionData, {
-        headers: {
-          'Authorization': `Bearer ${token}` // Enviaremos o token para autenticação no futuro
-        }
-      });
+      await api.post('/transactions', transactionData);
 
       setSuccess('Transação registrada com sucesso!');
       setDescricao('');
@@ -83,12 +73,11 @@ const TransactionsPage = () => {
         <nav className="main-nav">
           <a href="/dashboard" className="nav-link">Dashboard</a>
           <a href="/transactions" className="nav-link active">Transações</a>
-          <a href="/balance" className="nav-link">Balanceamento</a>
+          <a href="/balanceamento" className="nav-link">Balanceamento</a>
           <a href="/feedback" className="nav-link">Feedback</a>
         </nav>
         <div className="user-menu">
           <span>Olá, {user.nome}!</span>
-          {/* BOTÃO "SAIR" AGORA CHAMA A FUNÇÃO handleLogout */}
           <button onClick={handleLogout} className="logout-btn">Sair</button>
         </div>
       </header>
@@ -109,7 +98,6 @@ const TransactionsPage = () => {
           <p className="form-subtitle">Preencha os dados da sua movimentação financeira</p>
           
           <div className="type-toggle">
-            {/* 3. CORREÇÃO: BOTÕES AGORA CHAMAM setTipo */}
             <button type="button" className={`toggle-btn ${tipo === 'entrada' ? 'active' : ''}`} onClick={() => setTipo('entrada')}>
               <span className="icon">⊙</span> Entrada
             </button>
@@ -130,14 +118,12 @@ const TransactionsPage = () => {
               <label htmlFor="valor">Valor (R$)</label>
               <input type="number" id="valor" value={valor} onChange={e => setValor(e.target.value)} placeholder="0,00" step="0.01" required />
             </div>
-            <div className="form-group">
+             <div className="form-group">
               <label htmlFor="data">Data</label>
-              {/* 4. CORREÇÃO: CAMPO DE DATA AGORA CHAMA setData */}
               <input type="date" id="data" value={data} onChange={e => setData(e.target.value)} required />
             </div>
             <div className="form-group">
               <label htmlFor="categoria">Categoria</label>
-              {/* 5. CORREÇÃO: CAMPO DE CATEGORIA AGORA CHAMA setCategoria */}
               <select id="categoria" value={categoria} onChange={e => setCategoria(e.target.value)} required>
                 <option>Alimentação</option>
                 <option>Moradia</option>

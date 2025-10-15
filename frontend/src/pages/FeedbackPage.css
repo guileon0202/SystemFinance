@@ -1,0 +1,89 @@
+/* arquivo: frontend/src/pages/FeedbackPage.css */
+
+.feedback-page-wrapper {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.feedback-content {
+    padding: 2.5rem;
+    max-width: 1400px; /* Um pouco mais largo para as 3 colunas */
+    margin: 0 auto;
+}
+
+.feedback-content .content-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.new-suggestion-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.kanban-column .column-title {
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.column-title .badge {
+    background-color: #e9ecef;
+    color: #495057;
+    font-size: 0.9rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+.feedback-card {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.feedback-card h3 {
+    font-size: 1rem;
+    margin-top: 0;
+}
+
+.feedback-card p {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.feedback-card footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #adb5bd;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f3f5;
+}
+
+/* Cores dos cards */
+.feedback-card.status-analisando { border-left: 4px solid #ffc107; } /* Amarelo */
+.feedback-card.status-desenvolvendo { border-left: 4px solid #17a2b8; } /* Azul-claro */
+.feedback-card.status-entregue { border-left: 4px solid #28a745; } /* Verde */

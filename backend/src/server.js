@@ -1,4 +1,4 @@
-// arquivo: backend/src/server.js (COMPLETO E ATUALIZADO)
+// arquivo: backend/src/server.js (CORRIGIDO)
 
 const express = require('express');
 const cors = require('cors');
@@ -11,20 +11,21 @@ require('dotenv').config();
 const port = process.env.PORT || 3000;
 
 // --- Middlewares Essenciais ---
-// Habilita o CORS para permitir que o frontend se comunique com o backend
 app.use(cors());
-// Habilita o Express para entender o corpo das requisições em formato JSON
 app.use(express.json());
 
 // --- Importação das Rotas ---
 const userRoutes = require('./routes/userRoutes');
-const transactionRoutes = require('./routes/transactionsRoutes'); // <-- LINHA ADICIONADA
+const transactionRoutes = require('./routes/transactionsRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 // --- Uso das Rotas ---
 // Todas as rotas de usuário usarão o prefixo /api/users
 app.use('/api/users', userRoutes);
 // Todas as rotas de transação usarão o prefixo /api/transactions
-app.use('/api/transactions', transactionRoutes); // <-- LINHA ADICIONADA
+app.use('/api/transactions', transactionRoutes);
+// ADICIONADO: Ativa as rotas de feedback com o prefixo /api/feedbacks
+app.use('/api/feedbacks', feedbackRoutes);
 
 // --- Iniciar o Servidor ---
 app.listen(port, () => {

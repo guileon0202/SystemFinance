@@ -1,24 +1,33 @@
-// arquivo: backend/src/routes/transactionsRoutes.js (COMPLETO E CORRIGIDO)
+// arquivo: backend/src/routes/transactionsRoutes.js (CORRIGIDO)
 
 const express = require('express');
 const router = express.Router();
 
-// 1. ADICIONE 'updateTransaction' à lista de importação
+const authMiddleware = require('../middleware/authMiddleware');
+
+// CORREÇÃO: Removida a duplicata da lista de importação
 const {
   createTransaction,
   getTransactions,
   getSummary,
   deleteTransaction,
-  updateTransaction // <-- ESTAVA FALTANDO AQUI
+  updateTransaction,
+  getSummaryByPeriod,
+  getSpendingByCategory
 } = require('../controllers/transactionsController');
 
-// --- Rotas Existentes ---
+
+// Aplica o middleware de segurança a todas as rotas abaixo
+router.use(authMiddleware);
+
+
+// --- ROTAS PROTEGIDAS ---
 router.post('/', createTransaction);
 router.get('/', getTransactions);
 router.get('/summary', getSummary);
+router.get('/summary_by_period', getSummaryByPeriod);
+router.get('/spending_by_category', getSpendingByCategory);
 router.delete('/:id', deleteTransaction);
-
-// --- Rota Nova para Atualizar ---
 router.put('/:id', updateTransaction);
 
 module.exports = router;

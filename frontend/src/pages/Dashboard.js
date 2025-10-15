@@ -1,9 +1,9 @@
-// arquivo: frontend/src/pages/Dashboard.js (VERSÃO FINAL COM CRUD COMPLETO)
+// arquivo: frontend/src/pages/Dashboard.js (VERSÃO FINAL E SEGURA)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
-import EditTransactionModal from '../components/EditTransactionModal'; // 1. IMPORTA O NOVO MODAL
+import api from '../services/api'; // 1. USA A NOSSA INSTÂNCIA SEGURA DO AXIOS
+import EditTransactionModal from '../components/EditTransactionModal';
 import './Dashboard.css';
 
 // Componente de ícone simples para reutilização
@@ -22,11 +22,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [summary, setSummary] = useState({ saldo: 0, total_receitas: 0, total_despesas: 0 });
+  const [summary, setSummary] = useState({
+    saldo: 0,
+    total_receitas: 0,
+    total_despesas: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // 2. NOVOS ESTADOS PARA CONTROLAR A EDIÇÃO
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
@@ -46,15 +49,22 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  // Transforma a busca de dados em uma função reutilizável com useCallback
+  // Função reutilizável para buscar todos os dados do dashboard
   const fetchData = useCallback(async () => {
+    // A função só roda se o usuário já foi carregado do localStorage
     if (user) {
       setIsLoading(true);
       try {
+        // 2. CHAMADAS À API ATUALIZADAS: NÃO PRECISAMOS MAIS PASSAR O userId
+        const transactionsPromise = api.get('/transactions');
+        const summaryPromise = api.get('/transactions/summary');
+
+        // Executa as duas requisições em paralelo
         const [transactionsResponse, summaryResponse] = await Promise.all([
-          axios.get(`http://localhost:3000/api/transactions?userId=${user.id}`),
-          axios.get(`http://localhost:3000/api/transactions/summary?userId=${user.id}`),
+          transactionsPromise,
+          summaryPromise,
         ]);
+
         setTransactions(transactionsResponse.data);
         setSummary(summaryResponse.data);
       } catch (err) {
@@ -76,10 +86,9 @@ const Dashboard = () => {
     navigate('/login');
   };
 
-  // 3. ATUALIZA A FUNÇÃO handleEdit PARA ABRIR O MODAL
   const handleEdit = (transactionToEdit) => {
-    setEditingTransaction(transactionToEdit); // Guarda a transação que queremos editar
-    setIsEditModalOpen(true); // Abre o modal
+    setEditingTransaction(transactionToEdit);
+    setIsEditModalOpen(true);
   };
 
   // Função para apagar uma transação
@@ -87,9 +96,8 @@ const Dashboard = () => {
     const isConfirmed = window.confirm('Tem certeza de que deseja apagar esta transação?');
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/transactions/${transactionId}`, {
-          data: { userId: user.id }
-        });
+        // 3. CHAMADA DELETE ATUALIZADA: NÃO PRECISA MAIS DO 'data' COM userId
+        await api.delete(`/transactions/${transactionId}`);
         fetchData(); // Busca os dados novamente para atualizar a tela
       } catch (err) {
         console.error("Erro ao apagar transação:", err);
@@ -109,7 +117,7 @@ const Dashboard = () => {
         <nav className="main-nav">
           <a href="/dashboard" className="nav-link active">Dashboard</a>
           <a href="/transactions" className="nav-link">Transações</a>
-          <a href="/balance" className="nav-link">Balanceamento</a>
+          <a href="/balanceamento" className="nav-link">Balanceamento</a>
           <a href="/feedback" className="nav-link">Feedback</a>
         </nav>
         <div className="user-menu">
@@ -192,12 +200,11 @@ const Dashboard = () => {
         <p>Desenvolvido por LGSoftware</p>
       </footer>
 
-      {/* 4. ADICIONA O NOVO MODAL DE EDIÇÃO */}
       <EditTransactionModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         transaction={editingTransaction}
-        onUpdate={fetchData} // Passa a função para o modal poder atualizar os dados
+        onUpdate={fetchData}
       />
     </div>
   );

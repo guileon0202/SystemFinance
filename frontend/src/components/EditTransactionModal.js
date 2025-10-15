@@ -1,9 +1,9 @@
-// arquivo: frontend/src/components/EditTransactionModal.js
+// arquivo: frontend/src/components/EditTransactionModal.js (VERSÃO FINAL E SEGURA)
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api'; // 1. USA A NOSSA INSTÂNCIA SEGURA DO AXIOS
 // Usaremos o mesmo CSS do modal de criação para manter a consistência
-import './TransactionModal.css'; 
+import './TransactionModal.css';
 
 const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
   // Estados para os campos do formulário
@@ -34,11 +34,11 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
         descricao,
         valor: parseFloat(valor),
         tipo,
-        userId: transaction.user_id, // Passamos o ID do usuário para segurança
+        // 2. REMOVEMOS O userId DAQUI. O backend o pegará do token.
       };
 
-      // Chama o endpoint PUT que criamos no backend
-      await axios.put(`http://localhost:3000/api/transactions/${transaction.id}`, updatedData);
+      // 3. USAMOS 'api' EM VEZ DE 'axios' PARA A CHAMADA PUT
+      await api.put(`/transactions/${transaction.id}`, updatedData);
 
       onUpdate(); // Chama a função para atualizar os dados no Dashboard
       onClose();  // Fecha o modal
@@ -54,7 +54,7 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
       <div className="modal-content">
         <h2>Editar Transação</h2>
         <form onSubmit={handleSubmit}>
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-message" style={{textAlign: 'center', marginBottom: '1rem'}}>{error}</p>}
           <div className="form-group">
             <label htmlFor="edit-descricao">Descrição</label>
             <input
@@ -72,6 +72,7 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
               id="edit-valor"
               value={valor}
               onChange={(e) => setValor(e.target.value)}
+              step="0.01"
               required
             />
           </div>

@@ -1,12 +1,13 @@
-// arquivo: backend/src/controllers/transactionsController.js (COMPLETO E ATUALIZADO)
+// arquivo: backend/src/controllers/transactionsController.js (VERSÃO FINAL COMPLETA)
 
 const db = require('../db/db');
 
 // --- 1. FUNÇÃO PARA CRIAR UMA NOVA TRANSAÇÃO ---
 async function createTransaction(req, res) {
-  const { descricao, valor, tipo, data, categoria, userId } = req.body;
+  const userId = req.userId;
+  const { descricao, valor, tipo, data, categoria } = req.body;
 
-  if (!descricao || !valor || !tipo || !data || !categoria || !userId) {
+  if (!descricao || !valor || !tipo || !data || !categoria) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
   }
   if (tipo !== 'receita' && tipo !== 'despesa') {
@@ -15,8 +16,8 @@ async function createTransaction(req, res) {
 
   try {
     const newTransaction = await db.query(
-      'INSERT INTO transactions (descricao, valor, tipo, data, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [descricao, valor, tipo, data, userId]
+      'INSERT INTO transactions (descricao, valor, tipo, data, user_id, categoria) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [descricao, valor, tipo, data, userId, categoria]
     );
     res.status(201).json({
       message: 'Transação registrada com sucesso!',
@@ -30,11 +31,7 @@ async function createTransaction(req, res) {
 
 // --- 2. FUNÇÃO PARA BUSCAR TODAS AS TRANSAÇÕES DE UM USUÁRIO ---
 async function getTransactions(req, res) {
-  const { userId } = req.query;
-
-  if (!userId) {
-    return res.status(400).json({ message: 'O ID do usuário é obrigatório.' });
-  }
+  const userId = req.userId;
 
   try {
     const result = await db.query(
@@ -48,13 +45,9 @@ async function getTransactions(req, res) {
   }
 }
 
-// --- 3. FUNÇÃO PARA BUSCAR O RESUMO FINANCEIRO ---
+// --- 3. FUNÇÃO PARA BUSCAR O RESUMO FINANCEIRO (GERAL) ---
 async function getSummary(req, res) {
-  const { userId } = req.query;
-
-  if (!userId) {
-    return res.status(400).json({ message: 'O ID do usuário é obrigatório.' });
-  }
+  const userId = req.userId;
 
   try {
     const summaryQuery = `
@@ -65,8 +58,8 @@ async function getSummary(req, res) {
       WHERE user_id = $1;
     `;
     const result = await db.query(summaryQuery, [userId]);
+    
     const summary = result.rows[0];
-
     const totalReceitas = parseFloat(summary.total_receitas);
     const totalDespesas = parseFloat(summary.total_despesas);
     const saldo = totalReceitas - totalDespesas;
@@ -84,12 +77,8 @@ async function getSummary(req, res) {
 
 // --- 4. FUNÇÃO PARA APAGAR UMA TRANSAÇÃO ---
 async function deleteTransaction(req, res) {
+  const userId = req.userId;
   const { id } = req.params;
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ message: 'O ID do usuário é necessário para apagar a transação.' });
-  }
 
   try {
     const result = await db.query(
@@ -108,22 +97,23 @@ async function deleteTransaction(req, res) {
   }
 }
 
-// --- 5. FUNÇÃO NOVA PARA ATUALIZAR (EDITAR) UMA TRANSAÇÃO ---
+// --- 5. FUNÇÃO PARA ATUALIZAR (EDITAR) UMA TRANSAÇÃO ---
 async function updateTransaction(req, res) {
-  const { id } = req.params; // ID da transação vindo da URL
-  const { descricao, valor, tipo, userId } = req.body; // Novos dados e o ID do usuário
+  const userId = req.userId;
+  const { id } = req.params;
+  const { descricao, valor, tipo, categoria, data } = req.body;
 
-  if (!descricao || !valor || !tipo || !userId) {
+  if (!descricao || !valor || !tipo || !categoria || !data) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
   }
 
   try {
     const result = await db.query(
       `UPDATE transactions 
-       SET descricao = $1, valor = $2, tipo = $3 
-       WHERE id = $4 AND user_id = $5 
+       SET descricao = $1, valor = $2, tipo = $3, categoria = $4, data = $5
+       WHERE id = $6 AND user_id = $7 
        RETURNING *`,
-      [descricao, valor, tipo, id, userId]
+      [descricao, valor, tipo, categoria, data, id, userId]
     );
 
     if (result.rowCount === 0) {
@@ -140,12 +130,83 @@ async function updateTransaction(req, res) {
   }
 }
 
+// --- 6. FUNÇÃO PARA BUSCAR O RESUMO POR PERÍODO ---
+async function getSummaryByPeriod(req, res) {
+  const userId = req.userId;
+  const { startDate, endDate } = req.query;
 
-// --- EXPORTAÇÃO DE TODAS AS CINCO FUNÇÕES ---
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: 'Data de início e data de fim são obrigatórias.' });
+  }
+
+  try {
+    const summaryQuery = `
+      SELECT
+        COALESCE(SUM(CASE WHEN tipo = 'receita' THEN valor ELSE 0 END), 0) AS total_receitas,
+        COALESCE(SUM(CASE WHEN tipo = 'despesa' THEN valor ELSE 0 END), 0) AS total_despesas
+      FROM transactions
+      WHERE user_id = $1 AND data BETWEEN $2 AND $3;
+    `;
+
+    const result = await db.query(summaryQuery, [userId, startDate, endDate]);
+    const summary = result.rows[0];
+
+    const totalReceitas = parseFloat(summary.total_receitas);
+    const totalDespesas = parseFloat(summary.total_despesas);
+    const saldo = totalReceitas - totalDespesas;
+
+    res.status(200).json({
+      total_receitas: totalReceitas,
+      total_despesas: totalDespesas,
+      saldo: saldo,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar resumo por período:', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+}
+
+// --- 7. FUNÇÃO PARA BUSCAR GASTOS POR CATEGORIA ---
+async function getSpendingByCategory(req, res) {
+  const userId = req.userId;
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: 'Data de início e data de fim são obrigatórias.' });
+  }
+
+  try {
+    const spendingQuery = `
+      SELECT
+        categoria,
+        SUM(valor) AS total_gasto
+      FROM transactions
+      WHERE
+        user_id = $1
+        AND tipo = 'despesa'
+        AND data BETWEEN $2 AND $3
+      GROUP BY
+        categoria
+      ORDER BY
+        total_gasto DESC;
+    `;
+
+    const result = await db.query(spendingQuery, [userId, startDate, endDate]);
+    res.status(200).json(result.rows);
+
+  } catch (error) {
+    console.error('Erro ao buscar gastos por categoria:', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+}
+
+// --- EXPORTAÇÃO DE TODAS AS SETE FUNÇÕES ---
 module.exports = {
   createTransaction,
   getTransactions,
   getSummary,
   deleteTransaction,
   updateTransaction,
+  getSummaryByPeriod,
+  getSpendingByCategory,
 };
