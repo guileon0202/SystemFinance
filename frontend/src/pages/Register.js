@@ -1,8 +1,6 @@
-// src/pages/Register.js
-
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // 1. Importe o useNavigate
-import axios from 'axios'; // 2. Importe o axios
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api'; // instância segura do Axios
 import './Register.css';
 
 const Register = () => {
@@ -10,39 +8,42 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState(''); // 3. Estado para guardar mensagens de erro
+  const [error, setError] = useState('');
 
-  const navigate = useNavigate(); // Hook para navegar entre páginas
+  const navigate = useNavigate();
 
-  // 4. A função agora é "async" para poder esperar a resposta do backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Limpa erros anteriores
+    setError('');
 
     if (password !== confirmPassword) {
       setError('As senhas não coincidem!');
       return;
     }
 
+    // Verifica se os termos foram aceitos antes de prosseguir
+    if (!termsAccepted) {
+        setError('Você deve aceitar os Termos de Uso e a Política de Privacidade para continuar.');
+        return;
+    }
+
     try {
-      // 5. ENVIANDO OS DADOS COM O AXIOS
-      // ATENÇÃO: Verifique se a URL abaixo corresponde à porta e rota do seu backend!
-      await axios.post('http://localhost:3000/api/users/register', {
-        nome: fullName, // Verifique se os nomes dos campos batem com o que seu backend espera
+      // Usa a instância 'api' que já lida com a URL base
+      await api.post('/users/register', {
+        nome: fullName,
         email: email,
         senha: password,
       });
 
-      // Se a requisição deu certo:
-      alert('Conta criada com sucesso! Você será redirecionado para o login.');
-      navigate('/login'); // Redireciona o usuário para a página de login
+      // Redireciona para a página de login com uma mensagem de sucesso
+      navigate('/login', { state: { message: 'Conta criada com sucesso! Faça o login para continuar.' } });
 
     } catch (err) {
-      // Se a requisição deu erro:
       console.error("Erro ao registrar:", err);
-      // Pega a mensagem de erro do backend, se houver, ou mostra uma mensagem genérica
       setError(err.response?.data?.message || 'Ocorreu um erro ao criar a conta. Tente novamente.');
     }
   };
@@ -54,13 +55,11 @@ const Register = () => {
            <span className="logo-icon">📈</span>
            <h2>Web Finanças</h2>
         </div>
-
         <h3>Criar conta</h3>
         <p className="subtitle">Preencha os dados abaixo para começar a usar</p>
-
-        {/* 6. Exibindo a mensagem de erro, se houver */}
+        
         {error && <p className="error-message">{error}</p>}
-
+        
         <div className="input-group">
           <label htmlFor="fullName">Nome completo</label>
           <input
@@ -124,15 +123,27 @@ const Register = () => {
             </span>
           </div>
         </div>
-
-        <button type="submit" className="submit-btn">
+        
+        <div className="terms-group">
+          <input 
+            type="checkbox" 
+            id="terms" 
+            checked={termsAccepted} 
+            onChange={(e) => setTermsAccepted(e.target.checked)} 
+          />
+          <label htmlFor="terms">
+            Eu li e aceito os{' '}
+            <Link to="/termos-de-uso" target="_blank">Termos de Uso</Link> e a{' '}
+            <Link to="/politica-de-privacidade" target="_blank">Política de Privacidade</Link>.
+          </label>
+        </div>
+        
+        <button type="submit" className="submit-btn" disabled={!termsAccepted}>
           Criar conta
         </button>
 
         <div className="form-footer">
-          <p>
-            Já tem uma conta? <Link to="/login">Faça login</Link>
-          </p>
+          <p>Já tem uma conta? <Link to="/login">Faça login</Link></p>
         </div>
       </form>
 

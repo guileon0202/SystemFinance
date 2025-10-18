@@ -1,8 +1,5 @@
-// arquivo: frontend/src/components/NewFeedbackModal.js
-
 import React, { useState } from 'react';
 import api from '../services/api';
-// Vamos reutilizar o CSS do modal de transação para manter o estilo
 import './TransactionModal.css'; 
 
 const NewFeedbackModal = ({ isOpen, onClose, onUpdate }) => {

@@ -1,15 +1,11 @@
-// arquivo: frontend/src/pages/Dashboard.js (VERSÃO FINAL E SEGURA)
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../services/api'; // 1. USA A NOSSA INSTÂNCIA SEGURA DO AXIOS
+import api from '../services/api'; // 1. INSTÂNCIA SEGURA DO AXIOS
 import EditTransactionModal from '../components/EditTransactionModal';
 import './Dashboard.css';
 
-// Componente de ícone simples para reutilização
 const Icon = ({ children }) => <span className="icon-placeholder">{children}</span>;
 
-// Função para formatar números como moeda brasileira (R$)
 const formatCurrency = (value) => {
   const numberValue = Number(value) || 0;
   return new Intl.NumberFormat('pt-BR', {
@@ -51,11 +47,9 @@ const Dashboard = () => {
 
   // Função reutilizável para buscar todos os dados do dashboard
   const fetchData = useCallback(async () => {
-    // A função só roda se o usuário já foi carregado do localStorage
     if (user) {
       setIsLoading(true);
       try {
-        // 2. CHAMADAS À API ATUALIZADAS: NÃO PRECISAMOS MAIS PASSAR O userId
         const transactionsPromise = api.get('/transactions');
         const summaryPromise = api.get('/transactions/summary');
 
@@ -96,7 +90,6 @@ const Dashboard = () => {
     const isConfirmed = window.confirm('Tem certeza de que deseja apagar esta transação?');
     if (isConfirmed) {
       try {
-        // 3. CHAMADA DELETE ATUALIZADA: NÃO PRECISA MAIS DO 'data' COM userId
         await api.delete(`/transactions/${transactionId}`);
         fetchData(); // Busca os dados novamente para atualizar a tela
       } catch (err) {

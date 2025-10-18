@@ -1,10 +1,8 @@
-// arquivo: frontend/src/services/api.js
-
 import axios from 'axios';
 
 // Cria uma instância do Axios com uma configuração base
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // A URL base de todas as nossas requisições
+  baseURL: 'http://localhost:3000/api',
 });
 
 // Adiciona o "porteiro" (Interceptor)

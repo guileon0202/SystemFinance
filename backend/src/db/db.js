@@ -1,5 +1,3 @@
-// Arquivo: src/db/db.js (VERSÃO CORRETA)
-
 const { Pool } = require('pg');
 require('dotenv').config();
 

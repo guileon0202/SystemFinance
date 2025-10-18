@@ -1,15 +1,13 @@
-// arquivo: frontend/src/pages/BalanceamentoPage.js (VERSÃO FINAL COM OS DOIS GRÁFICOS)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import './BalanceamentoPage.css';
 
-// 1. IMPORTE o componente 'Pie' para o novo gráfico
+// 1. IMPORTA o componente 'Pie' para o novo gráfico
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut, Pie } from 'react-chartjs-2';
 
-// Registre os componentes do Chart.js
+// Registra os componentes do Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const formatCurrency = (value) => {
@@ -25,7 +23,7 @@ const BalanceamentoPage = () => {
     const [user, setUser] = useState(null);
     const [activePeriod, setActivePeriod] = useState('monthly');
     const [summary, setSummary] = useState(null);
-    // 2. CRIE UM ESTADO PARA OS DADOS DE GASTOS POR CATEGORIA
+    // 2. CRIA UM ESTADO PARA OS DADOS DE GASTOS POR CATEGORIA
     const [spendingByCategory, setSpendingByCategory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 

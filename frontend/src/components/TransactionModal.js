@@ -1,5 +1,3 @@
-// arquivo: frontend/src/components/TransactionModal.js
-
 import React, { useState } from 'react';
 import './TransactionModal.css';
 

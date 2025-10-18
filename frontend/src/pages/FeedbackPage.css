@@ -1,5 +1,3 @@
-/* arquivo: frontend/src/pages/FeedbackPage.css */
-
 .feedback-page-wrapper {
     background-color: #f8f9fa;
     min-height: 100vh;
@@ -7,7 +5,7 @@
 
 .feedback-content {
     padding: 2.5rem;
-    max-width: 1400px; /* Um pouco mais largo para as 3 colunas */
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -83,7 +81,6 @@
     border-top: 1px solid #f1f3f5;
 }
 
-/* Cores dos cards */
-.feedback-card.status-analisando { border-left: 4px solid #ffc107; } /* Amarelo */
-.feedback-card.status-desenvolvendo { border-left: 4px solid #17a2b8; } /* Azul-claro */
-.feedback-card.status-entregue { border-left: 4px solid #28a745; } /* Verde */
+.feedback-card.status-analisando { border-left: 4px solid #ffc107; }
+.feedback-card.status-desenvolvendo { border-left: 4px solid #17a2b8; }
+.feedback-card.status-entregue { border-left: 4px solid #28a745; }

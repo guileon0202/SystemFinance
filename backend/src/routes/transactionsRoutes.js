@@ -1,11 +1,7 @@
-// arquivo: backend/src/routes/transactionsRoutes.js (CORRIGIDO)
-
 const express = require('express');
 const router = express.Router();
 
 const authMiddleware = require('../middleware/authMiddleware');
-
-// CORREÇÃO: Removida a duplicata da lista de importação
 const {
   createTransaction,
   getTransactions,
@@ -16,8 +12,6 @@ const {
   getSpendingByCategory
 } = require('../controllers/transactionsController');
 
-
-// Aplica o middleware de segurança a todas as rotas abaixo
 router.use(authMiddleware);
 
 

@@ -1,5 +1,3 @@
-// arquivo: frontend/src/App.js
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
@@ -10,6 +8,11 @@ import Dashboard from './pages/Dashboard';
 import TransactionsPage from './pages/TransactionsPage';
 import BalanceamentoPage from './pages/BalanceamentoPage';
 import FeedbackPage from './pages/FeedbackPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+
 
 // --- Componente da Página Inicial ---
 function HomePage() {
@@ -61,6 +64,10 @@ function App() {
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/balanceamento" element={<BalanceamentoPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/termos-de-uso" element={<TermsPage />} />
+        <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+        <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
+        <Route path="/redefinir-senha/:token" element={<ResetPasswordPage />} />
       </Routes>
     </Router>
   );

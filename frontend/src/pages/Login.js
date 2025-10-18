@@ -1,46 +1,44 @@
-// src/pages/Login.js (VERSÃO ATUALIZADA)
-
-import React, { useState } from 'react';
-// 1. Importe o useNavigate para o redirecionamento e o axios para a API
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import api from '../services/api';
 import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  // 2. Adicione um estado para guardar mensagens de erro
   const [error, setError] = useState('');
-
+  const [success, setSuccess] = useState('');
+  
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // 3. Transforme a função em "async"
+  // Verifica se há uma mensagem vindo da página de registro
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccess(location.state.message);
+    }
+  }, [location.state]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Limpa erros anteriores
+    setError('');
+    setSuccess('');
 
     try {
-      // 4. Envie os dados para o endpoint de login do backend
-      const response = await axios.post('http://localhost:3000/api/users/login', {
+      const response = await api.post('/users/login', {
         email: email,
-        senha: password, // Verifique se o backend espera "senha"
+        senha: password,
       });
 
-      // 5. Se o login for bem-sucedido, salve os dados e redirecione
       const { token, user } = response.data;
-
-      // Salva o token e as informações do usuário no Local Storage do navegador
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-
-      // Redireciona o usuário para a nova página de dashboard
       navigate('/dashboard');
 
     } catch (err) {
-      // 6. Se houver erro, exiba a mensagem para o usuário
       console.error("Erro ao fazer login:", err);
-      setError(err.response?.data?.message || 'Ocorreu um erro ao fazer login. Verifique suas credenciais.');
+      setError(err.response?.data?.message || 'Ocorreu um erro. Verifique suas credenciais.');
     }
   };
 
@@ -51,12 +49,11 @@ const Login = () => {
           <span className="logo-icon blue-icon">📈</span>
           <h2>Web Finanças</h2>
         </div>
-
         <h3>Bem-vindo de volta!</h3>
         <p className="subtitle">Entre com suas credenciais para acessar sua conta</p>
-
-        {/* 7. Exiba a mensagem de erro, se houver */}
+        
         {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
 
         <div className="input-group">
           <label htmlFor="email">E-mail</label>
@@ -88,6 +85,10 @@ const Login = () => {
               {showPassword ? '🙈' : '👁️'}
             </span>
           </div>
+        </div>
+        
+        <div className="forgot-password-link">
+          <Link to="/esqueci-senha">Esqueci minha senha</Link>
         </div>
 
         <button type="submit" className="submit-btn">

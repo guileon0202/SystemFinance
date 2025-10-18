@@ -1,5 +1,3 @@
-// arquivo: frontend/src/pages/FeedbackPage.js (VERSÃO FINAL E CORRIGIDA)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -28,7 +26,6 @@ const FeedbackPage = () => {
         if (user) {
             setIsLoading(true);
             try {
-                // ESTA É A LINHA CORRETA, SEM ADIÇÕES NA URL
                 const response = await api.get('/feedbacks');
                 setFeedbacks(response.data);
             } catch (error) {

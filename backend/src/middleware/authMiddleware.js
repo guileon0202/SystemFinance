@@ -1,10 +1,7 @@
-// arquivo: backend/src/middleware/authMiddleware.js
-
 const jwt = require('jsonwebtoken');
 const secret = process.env.JWT_SECRET || 'seu_segredo_super_forte';
 
 function authMiddleware(req, res, next) {
-  // 1. Pega o token do header 'Authorization' da requisição
   const authHeader = req.headers.authorization;
 
   // 2. Verifica se o token existe
@@ -12,7 +9,6 @@ function authMiddleware(req, res, next) {
     return res.status(401).json({ message: 'Token não fornecido. Acesso negado.' });
   }
 
-  // O token vem no formato "Bearer [token]". Vamos separar as duas partes.
   const parts = authHeader.split(' ');
   if (parts.length !== 2) {
     return res.status(401).json({ message: 'Erro no formato do token.' });

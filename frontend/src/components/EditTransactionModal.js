@@ -1,8 +1,5 @@
-// arquivo: frontend/src/components/EditTransactionModal.js (VERSÃO FINAL E SEGURA)
-
 import React, { useState, useEffect } from 'react';
-import api from '../services/api'; // 1. USA A NOSSA INSTÂNCIA SEGURA DO AXIOS
-// Usaremos o mesmo CSS do modal de criação para manter a consistência
+import api from '../services/api';
 import './TransactionModal.css';
 
 const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
@@ -12,7 +9,6 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
   const [tipo, setTipo] = useState('despesa');
   const [error, setError] = useState('');
 
-  // useEffect para preencher o formulário quando o modal abre com uma transação
   useEffect(() => {
     if (transaction) {
       setDescricao(transaction.descricao);
@@ -34,10 +30,9 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
         descricao,
         valor: parseFloat(valor),
         tipo,
-        // 2. REMOVEMOS O userId DAQUI. O backend o pegará do token.
       };
 
-      // 3. USAMOS 'api' EM VEZ DE 'axios' PARA A CHAMADA PUT
+      // 3. CHAMADA À API ATUALIZADA--
       await api.put(`/transactions/${transaction.id}`, updatedData);
 
       onUpdate(); // Chama a função para atualizar os dados no Dashboard

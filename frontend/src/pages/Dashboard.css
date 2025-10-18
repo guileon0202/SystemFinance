@@ -1,4 +1,3 @@
-/* src/pages/Dashboard.css (VERSÃO FINAL) */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 body {
@@ -204,11 +203,11 @@ body {
 }
 
 .transaction-value.receita {
-  color: #28a745; /* Verde para receitas */
+  color: #28a745;
 }
 
 .transaction-value.despesa {
-  color: #dc3545; /* Vermelho para despesas */
+  color: #dc3545;
 }
 
 .transaction-item {
@@ -219,7 +218,6 @@ body {
 }
 
 .transaction-info {
-  /* Opcional: para agrupar descrição e data no futuro */
   display: flex;
   flex-direction: column;
 }
@@ -227,19 +225,19 @@ body {
 .transaction-details {
   display: flex;
   align-items: center;
-  gap: 1rem; /* Espaço entre o valor e os botões */
+  gap: 1rem;
 }
 
 .transaction-actions {
   display: flex;
-  gap: 0.5rem; /* Espaço entre os botões de editar e apagar */
+  gap: 0.5rem;
 }
 
 .action-btn {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem; /* Tamanho dos emojis */
+  font-size: 1.2rem;
   padding: 0.25rem;
   border-radius: 50%;
   width: 32px;
@@ -251,13 +249,13 @@ body {
 }
 
 .action-btn:hover {
-  background-color: #f1f3f5; /* Fundo cinza claro ao passar o mouse */
+  background-color: #f1f3f5;
 }
 
 .edit-btn:hover {
-  color: #007bff; /* Azul para editar */
+  color: #007bff;
 }
 
 .delete-btn:hover {
-  color: #dc3545; /* Vermelho para apagar */
+  color: #dc3545;
 }

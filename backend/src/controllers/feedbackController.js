@@ -1,5 +1,3 @@
-// arquivo: backend/src/controllers/feedbackController.js (ATUALIZADO)
-
 const db = require('../db/db');
 
 // --- FUNÇÃO JÁ EXISTENTE ---
@@ -18,10 +16,9 @@ async function getFeedbacks(req, res) {
   }
 }
 
-// --- FUNÇÃO NOVA ---
 // Função para criar um novo feedback
 async function createFeedback(req, res) {
-  const userId = req.userId; // ID do usuário vem do token (middleware)
+  const userId = req.userId;
   const { titulo, descricao } = req.body;
 
   if (!titulo || !descricao) {
@@ -29,14 +26,11 @@ async function createFeedback(req, res) {
   }
 
   try {
-    // 1. Buscar o nome do usuário logado para usar como autor
     const userResult = await db.query('SELECT nome FROM users WHERE id = $1', [userId]);
     if (userResult.rows.length === 0) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
     const autor = userResult.rows[0].nome;
-
-    // 2. Inserir o novo feedback com status inicial 'analisando'
     const newFeedback = await db.query(
       `INSERT INTO feedbacks (titulo, descricao, autor, status, user_id) 
        VALUES ($1, $2, $3, 'analisando', $4) 
