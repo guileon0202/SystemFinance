@@ -197,3 +197,45 @@
 .action-btn:hover {
   background-color: #f1f3f5;
 }
+
+.filters-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filters-container label {
+    font-weight: 500;
+}
+
+.filters-container select {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+}
+
+.pagination-container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination-container button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pagination-container button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.pagination-container div {
+    display: flex;
+    gap: 0.5rem;
+}

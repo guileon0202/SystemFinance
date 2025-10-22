@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import './TransactionModal.css';
+import './TransactionModal.css'; 
 
 const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
-  // Estados para os campos do formulário
+  // 1. ADICIONA ESTADOS PARA OS NOVOS CAMPOS
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState('');
   const [tipo, setTipo] = useState('despesa');
+  const [data, setData] = useState('');
+  const [categoria, setCategoria] = useState('Outros');
   const [error, setError] = useState('');
 
+  // useEffect para preencher o formulário quando o modal abre
   useEffect(() => {
     if (transaction) {
       setDescricao(transaction.descricao);
       setValor(parseFloat(transaction.valor));
       setTipo(transaction.tipo);
+      setData(new Date(transaction.data).toISOString().split('T')[0]);
+      setCategoria(transaction.categoria);
     }
   }, [transaction]);
 
@@ -30,13 +35,15 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
         descricao,
         valor: parseFloat(valor),
         tipo,
+        data,
+        categoria,
       };
 
-      // 3. CHAMADA À API ATUALIZADA--
+      // Chama o endpoint PUT que criamos no backend
       await api.put(`/transactions/${transaction.id}`, updatedData);
 
-      onUpdate(); // Chama a função para atualizar os dados no Dashboard
-      onClose();  // Fecha o modal
+      onUpdate();
+      onClose();
 
     } catch (err) {
       console.error("Erro ao atualizar transação:", err);
@@ -50,47 +57,35 @@ const EditTransactionModal = ({ isOpen, onClose, transaction, onUpdate }) => {
         <h2>Editar Transação</h2>
         <form onSubmit={handleSubmit}>
           {error && <p className="error-message" style={{textAlign: 'center', marginBottom: '1rem'}}>{error}</p>}
+          
           <div className="form-group">
             <label htmlFor="edit-descricao">Descrição</label>
-            <input
-              type="text"
-              id="edit-descricao"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              required
-            />
+            <input type="text" id="edit-descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
           </div>
           <div className="form-group">
             <label htmlFor="edit-valor">Valor</label>
-            <input
-              type="number"
-              id="edit-valor"
-              value={valor}
-              onChange={(e) => setValor(e.target.value)}
-              step="0.01"
-              required
-            />
+            <input type="number" id="edit-valor" value={valor} onChange={(e) => setValor(e.target.value)} step="0.01" required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="edit-data">Data</label>
+            <input type="date" id="edit-data" value={data} onChange={(e) => setData(e.target.value)} required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="edit-categoria">Categoria</label>
+            <select id="edit-categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} required>
+                <option>Alimentação</option>
+                <option>Moradia</option>
+                <option>Transporte</option>
+                <option>Lazer</option>
+                <option>Salário</option>
+                <option>Outros</option>
+            </select>
           </div>
           <div className="form-group type-group">
-            <label>
-              <input
-                type="radio"
-                value="despesa"
-                checked={tipo === 'despesa'}
-                onChange={() => setTipo('despesa')}
-              />
-              Despesa
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="receita"
-                checked={tipo === 'receita'}
-                onChange={() => setTipo('receita')}
-              />
-              Receita
-            </label>
+            <label><input type="radio" value="despesa" checked={tipo === 'despesa'} onChange={() => setTipo('despesa')} /> Despesa</label>
+            <label><input type="radio" value="receita" checked={tipo === 'receita'} onChange={() => setTipo('receita')} /> Receita</label>
           </div>
+
           <div className="modal-actions">
             <button type="button" className="btn-cancel" onClick={onClose}>Cancelar</button>
             <button type="submit" className="btn-save">Salvar Alterações</button>

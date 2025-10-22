@@ -162,3 +162,13 @@ button,
     font-size: 0.9rem;
     color: #6c757d;
 }
+
+.logo-link, .user-name-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.main-nav .nav-link.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}

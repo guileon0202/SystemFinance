@@ -1,7 +1,10 @@
+// arquivo: frontend/src/pages/TransactionsPage.js (VERSÃO FINAL COMPLETA E REFATORADA)
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import EditTransactionModal from '../components/EditTransactionModal';
+import Header from '../components/Header'; // Importa o Header reutilizável
 import './TransactionsPage.css';
 
 const formatCurrency = (value) => {
@@ -12,17 +15,21 @@ const formatCurrency = (value) => {
 const TransactionsPage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
-    const [activeTab, setActiveTab] = useState('add');
+    const [activeTab, setActiveTab] = useState('view');
 
     const [transactions, setTransactions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalItems: 0 });
+    const [filter, setFilter] = useState('todos');
+
     const [tipo, setTipo] = useState('saida');
     const [descricao, setDescricao] = useState('');
     const [valor, setValor] = useState('');
     const [data, setData] = useState(new Date().toISOString().split('T')[0]);
     const [categoria, setCategoria] = useState('Alimentação');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const [formError, setFormError] = useState('');
+    const [formSuccess, setFormSuccess] = useState('');
+
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
 
@@ -35,22 +42,32 @@ const TransactionsPage = () => {
         }
     }, [navigate]);
 
-    const fetchTransactions = useCallback(async () => {
+    const fetchTransactions = useCallback(async (page = 1, tipoFiltro = 'todos') => {
         if (!user) return;
         setIsLoading(true);
         try {
-            const response = await api.get('/transactions');
-            setTransactions(response.data);
+            const params = { page, limit: 10 };
+            if (tipoFiltro !== 'todos') {
+                params.tipo = tipoFiltro;
+            }
+            const response = await api.get('/transactions', { params });
+            setTransactions(response.data.transactions);
+            setPagination({
+                currentPage: response.data.currentPage,
+                totalPages: response.data.totalPages,
+                totalItems: response.data.totalItems,
+            });
         } catch (err) {
             console.error("Erro ao buscar transações:", err);
+            setFormError("Não foi possível carregar a lista de transações.");
         } finally {
             setIsLoading(false);
         }
     }, [user]);
 
     useEffect(() => {
-        fetchTransactions();
-    }, [fetchTransactions]);
+        fetchTransactions(pagination.currentPage, filter);
+    }, [fetchTransactions, pagination.currentPage, filter]);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -59,11 +76,11 @@ const TransactionsPage = () => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setSuccess('');
+        setFormError('');
+        setFormSuccess('');
 
         if (parseFloat(valor) <= 0) {
-            setError('O valor da transação deve ser maior que zero.');
+            setFormError('O valor da transação deve ser maior que zero.');
             return;
         }
         
@@ -73,16 +90,16 @@ const TransactionsPage = () => {
             const transactionData = { descricao, valor: parseFloat(valor), tipo: tipoParaBackend, data, categoria };
             await api.post('/transactions', transactionData);
             
-            setSuccess('Transação registrada com sucesso!');
+            setFormSuccess('Transação registrada com sucesso!');
             setDescricao('');
             setValor('');
-
-            fetchTransactions();
+            
+            fetchTransactions(1, 'todos');
             setActiveTab('view');
             
         } catch (err) {
             console.error("Erro ao registrar transação:", err);
-            setError(err.response?.data?.message || 'Ocorreu um erro ao salvar a transação.');
+            setFormError(err.response?.data?.message || 'Ocorreu um erro ao salvar a transação.');
         }
     };
     
@@ -96,30 +113,29 @@ const TransactionsPage = () => {
         if (isConfirmed) {
             try {
                 await api.delete(`/transactions/${transactionId}`);
-                fetchTransactions();
+                fetchTransactions(pagination.currentPage, filter);
             } catch (err) {
                 alert('Não foi possível apagar a transação.');
             }
         }
     };
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= pagination.totalPages) {
+            setPagination(prev => ({ ...prev, currentPage: newPage }));
+        }
+    };
+
+    const handleFilterChange = (e) => {
+        setFilter(e.target.value);
+        setPagination(prev => ({ ...prev, currentPage: 1 }));
+    };
+    
     if (!user) return null;
 
     return (
         <div className="transactions-page-wrapper">
-            <header className="main-header">
-                <div className="logo"><strong>Web</strong> Finanças</div>
-                <nav className="main-nav">
-                    <a href="/dashboard" className="nav-link">Dashboard</a>
-                    <a href="/transactions" className="nav-link active">Transações</a>
-                    <a href="/balanceamento" className="nav-link">Balanceamento</a>
-                    <a href="/feedback" className="nav-link">Feedback</a>
-                </nav>
-                <div className="user-menu">
-                    <span>Olá, {user.nome}!</span>
-                    <button onClick={handleLogout} className="logout-btn">Sair</button>
-                </div>
-            </header>
+            <Header user={user} handleLogout={handleLogout} />
 
             <main className="transactions-content">
                 <div className="content-header">
@@ -142,8 +158,8 @@ const TransactionsPage = () => {
                             <button type="button" className={`toggle-btn ${tipo === 'saida' ? 'active' : ''}`} onClick={() => setTipo('saida')}>Saída</button>
                         </div>
 
-                        {error && <div className="form-message error">{error}</div>}
-                        {success && <div className="form-message success">{success}</div>}
+                        {formError && <div className="form-message error">{formError}</div>}
+                        {formSuccess && <div className="form-message success">{formSuccess}</div>}
 
                         <div className="form-grid">
                             <div className="form-group full-width">
@@ -177,35 +193,51 @@ const TransactionsPage = () => {
 
                 {activeTab === 'view' && (
                     <div className="list-container">
-                        <h3>Suas Movimentações</h3>
+                        <div className="filters-container">
+                            <label htmlFor="tipo-filtro">Filtrar por tipo:</label>
+                            <select id="tipo-filtro" value={filter} onChange={handleFilterChange}>
+                                <option value="todos">Todos</option>
+                                <option value="receita">Entradas</option>
+                                <option value="despesa">Saídas</option>
+                            </select>
+                        </div>
                         {isLoading ? (
                             <p>Carregando...</p>
                         ) : (
-                            <table className="transactions-table">
-                                <thead>
-                                    <tr>
-                                        <th>Descrição</th>
-                                        <th>Valor</th>
-                                        <th>Tipo</th>
-                                        <th>Data</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {transactions.map((t) => (
-                                        <tr key={t.id}>
-                                            <td>{t.descricao}</td>
-                                            <td className={t.tipo}>{formatCurrency(t.valor)}</td>
-                                            <td>{t.tipo === 'receita' ? 'Entrada' : 'Saída'}</td>
-                                            <td>{new Date(t.data).toLocaleDateString()}</td>
-                                            <td className="action-buttons-cell">
-                                                <button className="action-btn" onClick={() => handleEdit(t)}>✏️</button>
-                                                <button className="action-btn" onClick={() => handleDelete(t.id)}>🗑️</button>
-                                            </td>
+                            <>
+                                <table className="transactions-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Descrição</th>
+                                            <th>Valor</th>
+                                            <th>Tipo</th>
+                                            <th>Data</th>
+                                            <th>Ações</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {transactions.map((t) => (
+                                            <tr key={t.id}>
+                                                <td>{t.descricao}</td>
+                                                <td className={t.tipo}>{formatCurrency(t.valor)}</td>
+                                                <td>{t.tipo === 'receita' ? 'Entrada' : 'Saída'}</td>
+                                                <td>{new Date(t.data).toLocaleDateString()}</td>
+                                                <td className="action-buttons-cell">
+                                                    <button className="action-btn" onClick={() => handleEdit(t)}>✏️</button>
+                                                    <button className="action-btn" onClick={() => handleDelete(t.id)}>🗑️</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <div className="pagination-container">
+                                    <span>Página {pagination.currentPage} de {pagination.totalPages || 1}</span>
+                                    <div>
+                                        <button onClick={() => handlePageChange(pagination.currentPage - 1)} disabled={pagination.currentPage <= 1}>Anterior</button>
+                                        <button onClick={() => handlePageChange(pagination.currentPage + 1)} disabled={pagination.currentPage >= pagination.totalPages}>Próxima</button>
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
                 )}
@@ -215,7 +247,7 @@ const TransactionsPage = () => {
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 transaction={editingTransaction}
-                onUpdate={fetchTransactions}
+                onUpdate={() => fetchTransactions(pagination.currentPage, filter)}
             />
         </div>
     );

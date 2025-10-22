@@ -1,3 +1,5 @@
+// arquivo: frontend/src/App.js (CORRIGIDO E COMPLETO)
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
@@ -10,6 +12,7 @@ import BalanceamentoPage from './pages/BalanceamentoPage';
 import FeedbackPage from './pages/FeedbackPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+// --- 1. IMPORTE AS DUAS NOVAS PÁGINAS QUE FALTAVAM ---
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 
@@ -29,9 +32,9 @@ function HomePage() {
         <section className="hero">
           <h1>Controle suas <strong>finanças</strong> com facilidade</h1>
           <p>Gerencie seus gastos, acompanhe suas receitas e mantenha o controle total do seu dinheiro com nossa plataforma intuitiva.</p>
-          <button className="btn-primary-solid">
+          <Link to="/login" className="btn-primary-solid">
             Acessar minha conta &rarr;
-          </button>
+          </Link>
         </section>
         <section className="features">
           <div className="feature-card"><div className="icon-placeholder">📄</div><h3>Registro de Gastos</h3><p>Registre facilmente suas entradas e saídas com categorização automática.</p></div>
@@ -66,6 +69,7 @@ function App() {
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/termos-de-uso" element={<TermsPage />} />
         <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+        {/* --- 2. ADICIONE AS DUAS NOVAS ROTAS AO MAPA --- */}
         <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
         <Route path="/redefinir-senha/:token" element={<ResetPasswordPage />} />
       </Routes>

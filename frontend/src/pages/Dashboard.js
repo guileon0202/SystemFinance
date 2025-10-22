@@ -1,7 +1,10 @@
+// arquivo: frontend/src/pages/Dashboard.js (CORRIGIDO)
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../services/api'; // 1. INSTÂNCIA SEGURA DO AXIOS
+import api from '../services/api';
 import EditTransactionModal from '../components/EditTransactionModal';
+import Header from '../components/Header';
 import './Dashboard.css';
 
 const Icon = ({ children }) => <span className="icon-placeholder">{children}</span>;
@@ -29,7 +32,6 @@ const Dashboard = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
-  // Busca o usuário do localStorage
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('user');
@@ -45,22 +47,24 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  // Função reutilizável para buscar todos os dados do dashboard
   const fetchData = useCallback(async () => {
     if (user) {
       setIsLoading(true);
       try {
-        const transactionsPromise = api.get('/transactions');
+        // A API de transações agora retorna um objeto com paginação
+        const transactionsPromise = api.get('/transactions'); 
         const summaryPromise = api.get('/transactions/summary');
 
-        // Executa as duas requisições em paralelo
         const [transactionsResponse, summaryResponse] = await Promise.all([
           transactionsPromise,
           summaryPromise,
         ]);
 
-        setTransactions(transactionsResponse.data);
+        // --- CORREÇÃO AQUI ---
+        // Acessamos a propriedade .transactions dentro da resposta da API
+        setTransactions(transactionsResponse.data.transactions);
         setSummary(summaryResponse.data);
+
       } catch (err) {
         console.error("Erro ao buscar dados do dashboard:", err);
         setError("Não foi possível carregar os dados do seu dashboard.");
@@ -70,7 +74,6 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  // useEffect que chama a função fetchData
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -85,13 +88,12 @@ const Dashboard = () => {
     setIsEditModalOpen(true);
   };
 
-  // Função para apagar uma transação
   const handleDelete = async (transactionId) => {
     const isConfirmed = window.confirm('Tem certeza de que deseja apagar esta transação?');
     if (isConfirmed) {
       try {
         await api.delete(`/transactions/${transactionId}`);
-        fetchData(); // Busca os dados novamente para atualizar a tela
+        fetchData();
       } catch (err) {
         console.error("Erro ao apagar transação:", err);
         alert('Não foi possível apagar a transação.');
@@ -105,19 +107,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <header className="main-header">
-        <div className="logo"><strong>Web</strong> Finanças</div>
-        <nav className="main-nav">
-          <a href="/dashboard" className="nav-link active">Dashboard</a>
-          <a href="/transactions" className="nav-link">Transações</a>
-          <a href="/balanceamento" className="nav-link">Balanceamento</a>
-          <a href="/feedback" className="nav-link">Feedback</a>
-        </nav>
-        <div className="user-menu">
-          <span>Olá, {user.nome}!</span>
-          <button onClick={handleLogout} className="logout-btn">Sair</button>
-        </div>
-      </header>
+      <Header user={user} handleLogout={handleLogout} />
 
       <main className="dashboard-content">
         <div className="content-header">
@@ -150,10 +140,12 @@ const Dashboard = () => {
               <div><h3>Registrar Transação</h3><p>Adicione uma nova entrada ou saída</p></div>
             </div>
           </Link>
-          <div className="action-card">
-            <Icon>⏱️</Icon>
-            <div><h3>Ver Balanceamento</h3><p>Visualize seu resumo financeiro</p></div>
-          </div>
+          <Link to="/balanceamento" className="action-card-link">
+            <div className="action-card">
+              <Icon>⏱️</Icon>
+              <div><h3>Ver Balanceamento</h3><p>Visualize seu resumo financeiro</p></div>
+            </div>
+          </Link>
         </div>
         
         <div className="transaction-list">
@@ -162,7 +154,7 @@ const Dashboard = () => {
             <p>Carregando transações...</p>
           ) : error ? (
             <p className="error-message">{error}</p>
-          ) : transactions.length === 0 ? (
+          ) : !transactions || transactions.length === 0 ? (
             <div className="no-transactions">
               <p>Nenhuma transação registrada ainda.</p>
               <span>Comece adicionando sua primeira transação!</span>

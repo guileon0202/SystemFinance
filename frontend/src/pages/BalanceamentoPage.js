@@ -1,13 +1,14 @@
+// arquivo: frontend/src/pages/BalanceamentoPage.js (VERSÃO FINAL COM TAXA DE POUPANÇA)
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import Header from '../components/Header';
 import './BalanceamentoPage.css';
 
-// 1. IMPORTA o componente 'Pie' para o novo gráfico
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut, Pie } from 'react-chartjs-2';
 
-// Registra os componentes do Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const formatCurrency = (value) => {
@@ -22,12 +23,16 @@ const BalanceamentoPage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [activePeriod, setActivePeriod] = useState('monthly');
-    const [summary, setSummary] = useState(null);
-    // 2. CRIA UM ESTADO PARA OS DADOS DE GASTOS POR CATEGORIA
+    // 1. ATUALIZE O ESTADO INICIAL DO SUMMARY
+    const [summary, setSummary] = useState({
+        saldo: 0,
+        total_receitas: 0,
+        total_despesas: 0,
+        taxa_de_poupanca: 0, // <-- NOVO CAMPO
+    });
     const [spendingByCategory, setSpendingByCategory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Lógica para verificar se o usuário está logado
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -37,10 +42,9 @@ const BalanceamentoPage = () => {
         }
     }, [navigate]);
 
-    // 3. ATUALIZE A FUNÇÃO DE BUSCA PARA PEGAR OS 3 CONJUNTOS DE DADOS
+    // A função fetchAllData já busca os dados corretos, não precisa de alteração
     const fetchAllData = useCallback(async (period) => {
         if (!user) return;
-
         setIsLoading(true);
         let startDate, endDate = new Date().toISOString().split('T')[0];
 
@@ -57,17 +61,15 @@ const BalanceamentoPage = () => {
         }
 
         try {
-            // Agora fazemos 2 requisições em paralelo
             const summaryPromise = api.get(`/transactions/summary_by_period`, { params: { startDate, endDate } });
             const spendingPromise = api.get(`/transactions/spending_by_category`, { params: { startDate, endDate } });
-
             const [summaryResponse, spendingResponse] = await Promise.all([
                 summaryPromise,
                 spendingPromise
             ]);
             
             setSummary(summaryResponse.data);
-            setSpendingByCategory(spendingResponse.data); // Salva os dados do novo gráfico
+            setSpendingByCategory(spendingResponse.data);
 
         } catch (error) {
             console.error("Erro ao buscar dados do balanceamento:", error);
@@ -76,7 +78,6 @@ const BalanceamentoPage = () => {
         }
     }, [user]);
 
-    // Busca os dados sempre que o período ativo mudar
     useEffect(() => {
         fetchAllData(activePeriod);
     }, [activePeriod, fetchAllData]);
@@ -88,12 +89,9 @@ const BalanceamentoPage = () => {
 
     if (!user) return null;
 
-    // --- DADOS PARA OS GRÁFICOS ---
-    // Gráfico 1: Entradas vs Saídas (Doughnut)
     const doughnutChartData = {
         labels: ['Receitas', 'Despesas'],
         datasets: [{
-            label: 'R$',
             data: [summary?.total_receitas || 0, summary?.total_despesas || 0],
             backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(220, 53, 69, 0.8)'],
             borderColor: ['rgba(40, 167, 69, 1)', 'rgba(220, 53, 69, 1)'],
@@ -101,11 +99,9 @@ const BalanceamentoPage = () => {
         }],
     };
 
-    // Gráfico 2: Gastos por Categoria (Pie)
     const pieChartData = {
         labels: spendingByCategory.map(item => item.categoria),
         datasets: [{
-            label: 'Total Gasto',
             data: spendingByCategory.map(item => item.total_gasto),
             backgroundColor: [
                 'rgba(255, 99, 132, 0.8)',
@@ -121,19 +117,7 @@ const BalanceamentoPage = () => {
 
     return (
         <div className="balance-page-wrapper">
-            <header className="main-header">
-                <div className="logo"><strong>Web</strong> Finanças</div>
-                <nav className="main-nav">
-                    <a href="/dashboard" className="nav-link">Dashboard</a>
-                    <a href="/transactions" className="nav-link">Transações</a>
-                    <a href="/balanceamento" className="nav-link active">Balanceamento</a>
-                    <a href="/feedback" className="nav-link">Feedback</a>
-                </nav>
-                <div className="user-menu">
-                    <span>Olá, {user.nome}!</span>
-                    <button onClick={handleLogout} className="logout-btn">Sair</button>
-                </div>
-            </header>
+            <Header user={user} handleLogout={handleLogout} />
 
             <main className="balance-content">
                 <div className="content-header">
@@ -165,10 +149,13 @@ const BalanceamentoPage = () => {
                         <p className={summary?.saldo >= 0 ? 'income' : 'expenses'}>{isLoading ? '...' : formatCurrency(summary?.saldo)}</p>
                         <small>{summary?.saldo >= 0 ? 'Saldo positivo' : 'Saldo negativo'}</small>
                     </div>
+                    {/* 2. ATUALIZE O CARD DA TAXA DE POUPANÇA */}
                     <div className="info-card">
                         <span>Taxa de Poupança</span>
-                        <p>{isLoading ? '...' : '0.0%'}</p>
-                        <small>Em breve</small>
+                        <p className={summary?.saldo >= 0 ? 'income' : 'expenses'}>
+                            {isLoading ? '...' : `${(summary?.taxa_de_poupanca || 0).toFixed(1)}%`}
+                        </p>
+                        <small>Do total de receitas</small>
                     </div>
                 </div>
 
