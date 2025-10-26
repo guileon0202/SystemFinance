@@ -16,11 +16,13 @@ app.use(express.json());
 const userRoutes = require('./routes/userRoutes');
 const transactionRoutes = require('./routes/transactionsRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const investmentsRoutes = require('./routes/investmentsRoutes');
 
 // --- Uso das Rotas ---
 app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
+app.use('/api/investments', investmentsRoutes);
 
 // --- Iniciar o Servidor ---
 app.listen(port, () => {

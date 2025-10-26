@@ -1,0 +1,94 @@
+.profile-page-wrapper {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.profile-content {
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-details-card {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.profile-field {
+    margin-bottom: 1.5rem;
+}
+
+.profile-field label {
+    display: block;
+    font-weight: 500;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.profile-field span {
+    font-size: 1.1rem;
+}
+
+.profile-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 1rem;
+}
+
+.profile-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Reutiliza a classe de erro */
+.error-message {
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.profile-details-card .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.profile-details-card .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.profile-details-card .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.profile-button.save-btn {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.profile-button.cancel-btn {
+  background-color: transparent;
+  border-color: #dc3545;
+  color: #dc3545;
+}

@@ -1,7 +1,7 @@
-// arquivo: frontend/src/App.js (CORRIGIDO E COMPLETO)
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './App.css';
 import Register from './pages/Register';
@@ -12,10 +12,10 @@ import BalanceamentoPage from './pages/BalanceamentoPage';
 import FeedbackPage from './pages/FeedbackPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-// --- 1. IMPORTE AS DUAS NOVAS PÁGINAS QUE FALTAVAM ---
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-
+import ProfilePage from './pages/ProfilePage';
+import InvestmentsPage from './pages/InvestmentsPage';
 
 // --- Componente da Página Inicial ---
 function HomePage() {
@@ -59,6 +59,19 @@ function HomePage() {
 function App() {
   return (
     <Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Register />} />
@@ -69,9 +82,10 @@ function App() {
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/termos-de-uso" element={<TermsPage />} />
         <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
-        {/* --- 2. ADICIONE AS DUAS NOVAS ROTAS AO MAPA --- */}
         <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
         <Route path="/redefinir-senha/:token" element={<ResetPasswordPage />} />
+        <Route path="/perfil" element={<ProfilePage />} />
+        <Route path="/investimentos" element={<InvestmentsPage />} />
       </Routes>
     </Router>
   );

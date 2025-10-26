@@ -7,7 +7,7 @@ const api = axios.create({
 
 // Adiciona o "porteiro" (Interceptor)
 api.interceptors.request.use(async (config) => {
-  // Pega o token do localStorage
+  // Pega o token
   const token = localStorage.getItem('token');
 
   // Se o token existir, anexa ele ao header de Authorization

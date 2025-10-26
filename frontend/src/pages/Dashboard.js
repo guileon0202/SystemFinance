@@ -1,10 +1,9 @@
-// arquivo: frontend/src/pages/Dashboard.js (CORRIGIDO)
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import EditTransactionModal from '../components/EditTransactionModal';
 import Header from '../components/Header';
+import { toast } from 'react-toastify';
 import './Dashboard.css';
 
 const Icon = ({ children }) => <span className="icon-placeholder">{children}</span>;
@@ -50,9 +49,9 @@ const Dashboard = () => {
   const fetchData = useCallback(async () => {
     if (user) {
       setIsLoading(true);
+      setError('');
       try {
-        // A API de transações agora retorna um objeto com paginação
-        const transactionsPromise = api.get('/transactions'); 
+        const transactionsPromise = api.get('/transactions');
         const summaryPromise = api.get('/transactions/summary');
 
         const [transactionsResponse, summaryResponse] = await Promise.all([
@@ -60,14 +59,14 @@ const Dashboard = () => {
           summaryPromise,
         ]);
 
-        // --- CORREÇÃO AQUI ---
-        // Acessamos a propriedade .transactions dentro da resposta da API
         setTransactions(transactionsResponse.data.transactions);
         setSummary(summaryResponse.data);
 
       } catch (err) {
         console.error("Erro ao buscar dados do dashboard:", err);
-        setError("Não foi possível carregar os dados do seu dashboard.");
+        const errorMessage = "Não foi possível carregar os dados do seu dashboard.";
+        setError(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -89,17 +88,41 @@ const Dashboard = () => {
   };
 
   const handleDelete = async (transactionId) => {
-    const isConfirmed = window.confirm('Tem certeza de que deseja apagar esta transação?');
-    if (isConfirmed) {
-      try {
-        await api.delete(`/transactions/${transactionId}`);
-        fetchData();
-      } catch (err) {
-        console.error("Erro ao apagar transação:", err);
-        alert('Não foi possível apagar a transação.');
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p>Tem certeza de que deseja apagar esta transação?</p>
+          <button onClick={async () => {
+              try {
+                await api.delete(`/transactions/${transactionId}`);
+                fetchData();
+                toast.success('Transação apagada com sucesso!');
+              } catch (err) {
+                console.error("Erro ao apagar transação:", err);
+                toast.error('Não foi possível apagar a transação.');
+              }
+              closeToast();
+            }}
+            style={{ marginRight: '10px', padding: '5px 10px'}}
+          >
+            Sim
+          </button>
+          <button onClick={closeToast} style={{ padding: '5px 10px'}}>Não</button>
+        </div>
+      ), {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
       }
-    }
+    );
   };
+
+  const handleUpdateSuccess = () => {
+    fetchData();
+    toast.success('Transação atualizada com sucesso!');
+  }
 
   if (!user) {
     return <div className="loading-fullpage">Carregando...</div>;
@@ -134,7 +157,7 @@ const Dashboard = () => {
         </div>
 
         <div className="action-cards">
-          <Link to="/transactions" className="action-card-link">
+          <Link to="/transactions" state={{ defaultTab: 'add' }} className="action-card-link">
             <div className="action-card">
               <Icon>+</Icon>
               <div><h3>Registrar Transação</h3><p>Adicione uma nova entrada ou saída</p></div>
@@ -153,7 +176,7 @@ const Dashboard = () => {
           {isLoading ? (
             <p>Carregando transações...</p>
           ) : error ? (
-            <p className="error-message">{error}</p>
+            <p>Erro ao carregar transações.</p> 
           ) : !transactions || transactions.length === 0 ? (
             <div className="no-transactions">
               <p>Nenhuma transação registrada ainda.</p>
@@ -177,7 +200,13 @@ const Dashboard = () => {
               ))}
             </ul>
           )}
-          <button className="view-all-btn">Ver Todas as Transações</button>
+          <Link 
+            to="/transactions" 
+            state={{ defaultTab: 'view' }} 
+            className="view-all-btn-link"
+          >
+            Ver Todas as Transações
+          </Link>
         </div>
       </main>
 
@@ -189,7 +218,7 @@ const Dashboard = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         transaction={editingTransaction}
-        onUpdate={fetchData}
+        onUpdate={handleUpdateSuccess}
       />
     </div>
   );

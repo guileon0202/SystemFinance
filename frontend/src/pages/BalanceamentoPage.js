@@ -1,5 +1,3 @@
-// arquivo: frontend/src/pages/BalanceamentoPage.js (VERSÃO FINAL COM TAXA DE POUPANÇA)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -23,12 +21,11 @@ const BalanceamentoPage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [activePeriod, setActivePeriod] = useState('monthly');
-    // 1. ATUALIZE O ESTADO INICIAL DO SUMMARY
     const [summary, setSummary] = useState({
         saldo: 0,
         total_receitas: 0,
         total_despesas: 0,
-        taxa_de_poupanca: 0, // <-- NOVO CAMPO
+        taxa_de_poupanca: 0,
     });
     const [spendingByCategory, setSpendingByCategory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +39,6 @@ const BalanceamentoPage = () => {
         }
     }, [navigate]);
 
-    // A função fetchAllData já busca os dados corretos, não precisa de alteração
     const fetchAllData = useCallback(async (period) => {
         if (!user) return;
         setIsLoading(true);

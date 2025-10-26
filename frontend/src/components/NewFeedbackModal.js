@@ -16,12 +16,10 @@ const NewFeedbackModal = ({ isOpen, onClose, onUpdate }) => {
     setError('');
 
     try {
-      // Chama o endpoint POST que criamos no backend
       await api.post('/feedbacks', { titulo, descricao });
 
-      onUpdate(); // Chama a função para atualizar os dados na página de Feedback
-      onClose();  // Fecha o modal
-      // Limpa os campos para a próxima vez que o modal for aberto
+      onUpdate();
+      onClose();
       setTitulo('');
       setDescricao('');
 

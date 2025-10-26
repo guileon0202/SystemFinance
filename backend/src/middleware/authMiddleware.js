@@ -26,7 +26,6 @@ function authMiddleware(req, res, next) {
     }
 
     // 4. Se for válido, anexa o ID do usuário à requisição
-    // O 'decoded.userId' vem do que salvamos quando criamos o token no login/registro
     req.userId = decoded.userId;
 
     // 5. Chama a próxima função (o controller) para continuar o processo

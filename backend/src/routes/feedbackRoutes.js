@@ -1,16 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
-// 1. IMPORTA a nova função createFeedback
-const { getFeedbacks, createFeedback } = require('../controllers/feedbackController');
+const adminMiddleware = require('../middleware/adminMiddleware');// MIDDLEWARE DE ADMIN
 
-// Protege todas as rotas de feedback
+// 2. IMPORTE a nova função
+const { 
+  getFeedbacks, 
+  createFeedback, 
+  updateFeedbackStatus 
+} = require('../controllers/feedbackController');
+
+// Protege todas as rotas de feedback (usuário precisa estar logado)
 router.use(authMiddleware);
 
-// Rota GET para buscar todos os feedbacks
+// --- ROTAS PARA USUÁRIOS LOGADOS ---
 router.get('/', getFeedbacks);
-
-// 2. ROTA NOVA para criar um novo feedback
 router.post('/', createFeedback);
+
+// --- ROTA EXCLUSIVA PARA ADMINS ---
+router.put('/:id/status', adminMiddleware, updateFeedbackStatus);
 
 module.exports = router;

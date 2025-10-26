@@ -9,7 +9,9 @@ const {
     login, 
     forgotPassword, 
     resetPassword, 
-    getUserProfile 
+    getUserProfile,
+    updateUserProfile,
+    changePassword
 } = require('../controllers/userController');
 
 
@@ -20,9 +22,14 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 
 
-// --- Rota Privada (precisa de login) ---
-// O authMiddleware protege esta rota
-router.get('/profile', authMiddleware, getUserProfile);
+// --- Rotas Privadas (precisam de login) ---
+router.use(authMiddleware);
+
+router.get('/profile', getUserProfile);
+router.put('/profile', updateUserProfile);
+
+// Rota nova para alterar a senha
+router.put('/change-password', changePassword);
 
 
 module.exports = router;

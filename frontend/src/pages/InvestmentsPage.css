@@ -1,0 +1,122 @@
+.investments-page-wrapper {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.investments-content {
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.search-card label {
+    font-weight: 500;
+    color: #495057;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-bar input {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.search-bar button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.search-bar button:disabled {
+    background-color: #a0cfff;
+    cursor: not-allowed;
+}
+
+.quote-result-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.quote-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #f1f3f5;
+    padding-bottom: 1rem;
+}
+
+.quote-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.quote-header h2 {
+    margin: 0;
+}
+
+.quote-name {
+    color: #6c757d;
+}
+
+.quote-body {
+    margin: 1.5rem 0;
+}
+
+.quote-price {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.quote-change {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.quote-change.positive {
+    color: #28a745;
+}
+
+.quote-change.negative {
+    color: #dc3545;
+}
+
+.quote-change span {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.quote-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #adb5bd;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f3f5;
+}

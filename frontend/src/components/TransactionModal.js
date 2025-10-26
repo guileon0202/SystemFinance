@@ -4,7 +4,7 @@ import './TransactionModal.css';
 const TransactionModal = ({ isOpen, onClose }) => {
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState('');
-  const [tipo, setTipo] = useState('despesa'); // 'despesa' como padrão
+  const [tipo, setTipo] = useState('despesa');
 
   if (!isOpen) {
     return null;
@@ -12,10 +12,9 @@ const TransactionModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica para enviar os dados para o backend virá aqui
     console.log({ descricao, valor, tipo });
     alert('Transação registrada no console!');
-    onClose(); // Fecha o modal após o envio
+    onClose();
   };
 
   return (

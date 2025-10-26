@@ -259,3 +259,21 @@ body {
 .delete-btn:hover {
   color: #dc3545;
 }
+
+.view-all-btn-link {
+  display: inline-block;
+  background-color: transparent;
+  border: 1px solid #dee2e6;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 1rem;
+  text-decoration: none;
+  color: #212529;
+  transition: background-color 0.2s;
+}
+
+.view-all-btn-link:hover {
+  background-color: #f1f3f5;
+}
