@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api'; // instância segura do Axios
+import api from '../services/api';
 import './Register.css';
 
 const Register = () => {
