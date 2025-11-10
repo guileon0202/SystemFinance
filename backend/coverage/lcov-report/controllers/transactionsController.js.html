@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">57.4% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>54/108</span>
+                <span class='fraction'>62/108</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.11% </span>
+                <span class="strong">73.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>23/45</span>
+                <span class='fraction'>33/45</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">62.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/8</span>
+                <span class='fraction'>5/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">57.4% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>54/108</span>
+                <span class='fraction'>62/108</span>
             </div>
         
             
@@ -355,22 +355,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -642,23 +642,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const db = require('../db/db');
 &nbsp;
 // --- 1. FUNÇÃO PARA CRIAR UMA NOVA TRANSAÇÃO ---
-async function <span class="fstat-no" title="function not covered" >createTransaction(</span>req, res) {
-  const userId = <span class="cstat-no" title="statement not covered" >req.userId;</span>
-  const { descricao, valor, tipo, data, categoria } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+async function createTransaction(req, res) {
+  const userId = req.userId;
+  const { descricao, valor, tipo, data, categoria } = req.body;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (!descricao || !valor || !tipo || !data || !categoria) {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });</span>
+  if (!descricao || !valor || !tipo || !data || !categoria) {
+    return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
   }
-<span class="cstat-no" title="statement not covered" >  if (tipo !== 'receita' &amp;&amp; tipo !== 'despesa') {</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (tipo !== 'receita' &amp;&amp; tipo !== 'despesa') {
 <span class="cstat-no" title="statement not covered" >    return res.status(400).json({ message: "O tipo da transação deve ser 'receita' ou 'despesa'." });</span>
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const newTransaction = <span class="cstat-no" title="statement not covered" >await db.query(</span>
+  try {
+    const newTransaction = await db.query(
       'INSERT INTO transactions (descricao, valor, tipo, data, user_id, categoria) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [descricao, valor, tipo, data, userId, categoria]
     );
-<span class="cstat-no" title="statement not covered" >    res.status(201).json({</span>
+    res.status(201).json({
       message: 'Transação registrada com sucesso!',
       transaction: newTransaction.rows[0],
     });
@@ -934,7 +934,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-10T19:54:17.828Z
+                at 2025-11-10T20:18:09.426Z
             </div>
         <script src="../prettify.js"></script>
         <script>
