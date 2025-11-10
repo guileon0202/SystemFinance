@@ -9,7 +9,8 @@ const {
   deleteTransaction,
   updateTransaction,
   getSummaryByPeriod,
-  getSpendingByCategory
+  getSpendingByCategory,
+  getSpendingByCategoryAllTime
 } = require('../controllers/transactionsController');
 
 router.use(authMiddleware);
@@ -21,6 +22,9 @@ router.get('/', getTransactions);
 router.get('/summary', getSummary);
 router.get('/summary_by_period', getSummaryByPeriod);
 router.get('/spending_by_category', getSpendingByCategory);
+
+router.get('/spending_by_category_alltime', getSpendingByCategoryAllTime);
+
 router.delete('/:id', deleteTransaction);
 router.put('/:id', updateTransaction);
 

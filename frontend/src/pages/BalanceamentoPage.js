@@ -41,24 +41,38 @@ const BalanceamentoPage = () => {
 
     const fetchAllData = useCallback(async (period) => {
         if (!user) return;
+
         setIsLoading(true);
-        let startDate, endDate = new Date().toISOString().split('T')[0];
-
-        if (period === 'monthly') {
-            const today = new Date();
-            startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-        } else if (period === 'weekly') {
-            const today = new Date();
-            const firstDayOfWeek = today.getDate() - today.getDay();
-            startDate = new Date(new Date().setDate(firstDayOfWeek)).toISOString().split('T')[0];
-        } else if (period === 'yearly') {
-            const today = new Date();
-            startDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
-        }
-
         try {
-            const summaryPromise = api.get(`/transactions/summary_by_period`, { params: { startDate, endDate } });
-            const spendingPromise = api.get(`/transactions/spending_by_category`, { params: { startDate, endDate } });
+            let summaryPromise;
+            let spendingPromise;
+
+            if (period === 'all') {
+                // --- Caso 1: Botão "Todos os Períodos" ---
+                // Usa os endpoints "All Time" (sem filtro de data)
+                summaryPromise = api.get(`/transactions/summary`);
+                spendingPromise = api.get(`/transactions/spending_by_category_alltime`);
+
+            } else {
+                // --- Caso 2: Filtros de Data (Semana, Mês, Ano) ---
+                let startDate, endDate = new Date().toISOString().split('T')[0];
+
+                if (period === 'monthly') {
+                    const today = new Date();
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                } else if (period === 'weekly') {
+                    const today = new Date();
+                    const firstDayOfWeek = today.getDate() - today.getDay();
+                    startDate = new Date(new Date().setDate(firstDayOfWeek)).toISOString().split('T')[0];
+                } else if (period === 'yearly') {
+                    const today = new Date();
+                    startDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+                }
+
+                summaryPromise = api.get(`/transactions/summary_by_period`, { params: { startDate, endDate } });
+                spendingPromise = api.get(`/transactions/spending_by_category`, { params: { startDate, endDate } });
+            }
+
             const [summaryResponse, spendingResponse] = await Promise.all([
                 summaryPromise,
                 spendingPromise
@@ -125,8 +139,7 @@ const BalanceamentoPage = () => {
                     <button onClick={() => setActivePeriod('weekly')} className={activePeriod === 'weekly' ? 'active' : ''}>Última Semana</button>
                     <button onClick={() => setActivePeriod('monthly')} className={activePeriod === 'monthly' ? 'active' : ''}>Último Mês</button>
                     <button onClick={() => setActivePeriod('yearly')} className={activePeriod === 'yearly' ? 'active' : ''}>Último Ano</button>
-                    <button>Todos os Períodos</button>
-                    <button>Período Personalizado</button>
+                    <button onClick={() => setActivePeriod('all')} className={activePeriod === 'all' ? 'active' : ''}>Todos os Períodos</button>
                 </div>
 
                 <div className="balance-summary-grid">
@@ -145,7 +158,6 @@ const BalanceamentoPage = () => {
                         <p className={summary?.saldo >= 0 ? 'income' : 'expenses'}>{isLoading ? '...' : formatCurrency(summary?.saldo)}</p>
                         <small>{summary?.saldo >= 0 ? 'Saldo positivo' : 'Saldo negativo'}</small>
                     </div>
-                    {/* 2. ATUALIZE O CARD DA TAXA DE POUPANÇA */}
                     <div className="info-card">
                         <span>Taxa de Poupança</span>
                         <p className={summary?.saldo >= 0 ? 'income' : 'expenses'}>
@@ -162,7 +174,7 @@ const BalanceamentoPage = () => {
                         <div className="chart-placeholder">Nenhuma transação no período</div>
                     ) : (
                         <div className="chart-wrapper">
-                            <Doughnut data={doughnutChartData} />
+                            <Doughnut data={doughnutChartData} options={{ maintainAspectRatio: false }}/>
                         </div>
                     )}
                 </div>
@@ -174,7 +186,7 @@ const BalanceamentoPage = () => {
                         <div className="chart-placeholder">Nenhum gasto registrado no período.</div>
                     ) : (
                         <div className="chart-wrapper">
-                            <Pie data={pieChartData} />
+                            <Pie data={pieChartData} options={{ maintainAspectRatio: false }}/>
                         </div>
                     )}
                 </div>

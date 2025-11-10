@@ -73,7 +73,7 @@ async function getTransactions(req, res) {
   }
 }
 
-// --- 3. FUNÇÃO PARA BUSCAR O RESUMO FINANCEIRO (GERAL) ---
+// --- 3. FUNÇÃO PARA BUSCAR O RESUMO FINANCEIRO (GERAL / ALL TIME) ---
 async function getSummary(req, res) {
     const userId = req.userId;
   
@@ -91,11 +91,21 @@ async function getSummary(req, res) {
       const totalReceitas = parseFloat(summary.total_receitas);
       const totalDespesas = parseFloat(summary.total_despesas);
       const saldo = totalReceitas - totalDespesas;
+
+      // Calcula a taxa de poupança para o resumo geral também
+      let taxaDePoupanca = 0;
+      if (totalReceitas > 0) {
+        taxaDePoupanca = (saldo / totalReceitas) * 100;
+      }
+      if (taxaDePoupanca < 0) {
+        taxaDePoupanca = 0;
+      }
   
       res.status(200).json({
         total_receitas: totalReceitas,
         total_despesas: totalDespesas,
         saldo: saldo,
+        taxa_de_poupanca: taxaDePoupanca,
       });
     } catch (error) {
       console.error('Erro ao buscar resumo financeiro:', error);
@@ -203,7 +213,7 @@ async function getSummaryByPeriod(req, res) {
     }
 }
 
-// --- 7. FUNÇÃO PARA BUSCAR GASTOS POR CATEGORIA ---
+// --- 7. FUNÇÃO PARA BUSCAR GASTOS POR CATEGORIA (POR PERÍODO) ---
 async function getSpendingByCategory(req, res) {
     const userId = req.userId;
     const { startDate, endDate } = req.query;
@@ -237,7 +247,36 @@ async function getSpendingByCategory(req, res) {
     }
 }
 
-// --- EXPORTAÇÃO DE TODAS AS SETE FUNÇÕES ---
+// --- 8. FUNÇÃO NOVA PARA BUSCAR GASTOS POR CATEGORIA (ALL TIME) ---
+async function getSpendingByCategoryAllTime(req, res) {
+  const userId = req.userId;
+
+  try {
+    const spendingQuery = `
+      SELECT
+        categoria,
+        SUM(valor) AS total_gasto
+      FROM transactions
+      WHERE
+        user_id = $1
+        AND tipo = 'despesa'
+      GROUP BY
+        categoria
+      ORDER BY
+        total_gasto DESC;
+    `;
+    
+    // Note: Esta query só precisa do $1 (userId)
+    const result = await db.query(spendingQuery, [userId]);
+    res.status(200).json(result.rows);
+
+  } catch (error) {
+    console.error('Erro ao buscar gastos por categoria (all time):', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+}
+
+// --- EXPORTAÇÃO DE TODAS AS OITO FUNÇÕES ---
 module.exports = {
   createTransaction,
   getTransactions,
@@ -246,4 +285,5 @@ module.exports = {
   updateTransaction,
   getSummaryByPeriod,
   getSpendingByCategory,
+  getSpendingByCategoryAllTime,
 };
