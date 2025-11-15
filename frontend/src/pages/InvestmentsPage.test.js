@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react'; 
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import InvestmentsPage from './InvestmentsPage';
@@ -7,13 +7,15 @@ import api from '../services/api';
 import { ToastContainer, toast } from 'react-toastify'; 
 
 // --- MOCKS GLOBAIS ---
-jest.mock('../services/api', () => ({
-  get: jest.fn(),
-}));
+jest.mock('../services/api', () => ({ get: jest.fn() }));
+toast.error = jest.fn();
 
 // Mock Header
-jest.mock('../components/Header', () => ({ user }) => (
-  <header><span>Logado como: {user.email}</span></header>
+jest.mock('../components/Header', () => ({ user, handleLogout }) => (
+  <header>
+    <span>Logado como: {user.email}</span>
+    <button onClick={handleLogout}>Sair</button>
+  </header>
 ));
 
 // MOCK LOCALSTORAGE (Padrão)
@@ -48,8 +50,6 @@ const renderPage = (initialUser = mockUser) => {
     localStorage.clear();
   }
 
-  // CORREÇÃO: Usamos o 'render' simples aqui, e o 'await act' no teste,
-  // pois a navegação é assíncrona.
   return render(
     <MemoryRouter initialEntries={['/investimentos']}>
       <ToastContainer />
@@ -65,7 +65,7 @@ const renderPage = (initialUser = mockUser) => {
 beforeEach(() => {
   jest.resetAllMocks();
   localStorage.clear();
-  // Recria a implementação do localStorage
+  // Garante que o usuário logado seja retornado para a maioria dos testes
   localStorageMock.getItem.mockImplementation((key) => {
     if (key === 'user') return JSON.stringify(mockUser);
     return null;
@@ -82,11 +82,10 @@ describe('1. Fluxo de Autenticação e Renderização', () => {
   test('1. deve redirecionar para /login se não houver usuário logado', async () => {
     localStorage.clear();
     
-    // CORREÇÃO: Envolve a renderização em 'act' para processar o navigate() assíncrono
-    await act(async () => {
-        renderPage(null);
-    });
+    // CORREÇÃO: Removemos o act para evitar o bloqueio da navegação do useEffect
+    renderPage(null);
     
+    // O await findByText cuida da assincronia do navigate()
     expect(await screen.findByText('Página de Login')).toBeInTheDocument();
   });
 
@@ -107,26 +106,23 @@ describe('2. Fluxo de Busca e Resultados', () => {
     renderPage();
     
     const tickerInput = screen.getByLabelText(/Digite o Ticker do Ativo/i);
-    const searchButton = screen.getByRole('button', { name: 'Buscar' });
+    const searchButton = screen.getByRole('button', { name: /Buscar/i });
 
     await userEvent.type(tickerInput, 'petr4');
     userEvent.click(searchButton);
 
-    // 1. Verifica o estado de Loading
     expect(screen.getByRole('button', { name: /Buscando.../i })).toBeDisabled();
 
-    // 2. Espera a API ser chamada
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith('/investments/quote/PETR4');
     });
 
-    // 3. Verifica a exibição dos dados formatados
-    // CORREÇÃO: O componente renderiza o valor com ponto (1.50) e em tags separadas.
+    // CORREÇÃO: Procura a string literal '1.50%'
     expect(await screen.findByText('R$ 30,50')).toBeInTheDocument();
     expect(screen.getByText('PETR4')).toBeInTheDocument();
-    // Verifica a porcentagem (1.50% é o valor do toFixed(2))
-    expect(screen.getByText('1,50%')).toBeInTheDocument(); 
+    expect(screen.getByText('1.50%')).toBeInTheDocument(); // <<< CORREÇÃO DE FORMATAÇÃO FINAL
     expect(screen.getByText(/Aberto/i)).toBeInTheDocument(); 
+    expect(screen.getByRole('button', { name: 'Buscar' })).toBeEnabled();
   });
 
   test('4. deve mostrar toast de erro se a busca na API falhar', async () => {
@@ -145,12 +141,10 @@ describe('2. Fluxo de Busca e Resultados', () => {
     await userEvent.type(tickerInput, 'ASDF');
     userEvent.click(searchButton);
     
-    // 1. Espera o erro da API e a chamada do toast
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(errorMessage);
     });
 
-    // 2. Verifica se o loading terminou
     expect(screen.getByRole('button', { name: /Buscar/i })).toBeEnabled();
   });
 
