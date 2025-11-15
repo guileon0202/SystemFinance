@@ -1,5 +1,3 @@
-// Arquivo: frontend/src/pages/Login.test.js (Correção Final)
-
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -53,7 +51,6 @@ const renderLogin = (locationState = null) => {
 
 // 5. Limpar os mocks antes de cada teste
 beforeEach(() => {
-  // MUDANÇA AQUI: resetAllMocks() limpa a implementação (o .mockRejectedValue)
   jest.resetAllMocks(); 
   localStorageMock.clear();
 });

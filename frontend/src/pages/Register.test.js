@@ -1,5 +1,3 @@
-// Arquivo: frontend/src/pages/Register.test.js
-
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -30,7 +28,6 @@ const renderRegister = () => {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<MockLogin />} />
-        {/* Adicione outras rotas que o Register usa (termos, etc.) */}
         <Route path="/termos-de-uso" element={<div>Termos de Uso</div>} />
         <Route path="/politica-de-privacidade" element={<div>Política de Privacidade</div>} />
       </Routes>

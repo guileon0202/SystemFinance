@@ -1,5 +1,4 @@
 import React from 'react';
-// 1. REMOVIDO 'BrowserRouter as Router' daqui
 import { Routes, Route, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +18,6 @@ import ProfilePage from './pages/ProfilePage';
 import InvestmentsPage from './pages/InvestmentsPage';
 
 // --- Componente da Página Inicial ---
-// Nenhuma mudança aqui, o "Link" ainda é importado corretamente
 function HomePage() {
   return (
    <div className="container">
@@ -61,7 +59,6 @@ function HomePage() {
 // --- Componente principal que gerencia as rotas ---
 function App() {
   return (
-    // 2. ADICIONADO "Fragment" (<>) para envolver os elementos
     <>
       <ToastContainer
         position="top-right"
@@ -91,7 +88,6 @@ function App() {
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/investimentos" element={<InvestmentsPage />} />
       </Routes>
-    {/* 3. <Router> removido e Fragment (</>) fechado */}
     </>
   );
 }
