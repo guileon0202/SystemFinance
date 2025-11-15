@@ -11,13 +11,9 @@ const ProfilePage = () => {
     const [profileData, setProfileData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-
-    // Estados para o modo de EDIÇÃO DE PERFIL
     const [isEditing, setIsEditing] = useState(false);
     const [editNome, setEditNome] = useState('');
     const [editEmail, setEditEmail] = useState('');
-
-    // --- 1. NOVOS ESTADOS PARA O FORMULÁRIO DE ALTERAR SENHA ---
     const [senhaAntiga, setSenhaAntiga] = useState('');
     const [novaSenha, setNovaSenha] = useState('');
     const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
@@ -124,7 +120,6 @@ const ProfilePage = () => {
             });
 
             toast.success('Senha alterada com sucesso!');
-            // Limpa os campos após o sucesso
             setSenhaAntiga('');
             setNovaSenha('');
             setConfirmarNovaSenha('');
@@ -196,7 +191,7 @@ const ProfilePage = () => {
                             )}
                         </div>
 
-                        {/* --- Card 2: Alterar Senha (NOVO) --- */}
+                        {/* --- Card 2: Alterar Senha --- */}
                         <div className="profile-details-card">
                             <h3>Alterar Senha</h3>
                             <form onSubmit={handleChangePassword}>
