@@ -1,5 +1,10 @@
 const db = require('../db/db');
+const Filter = require('bad-words');
+const filter = new Filter();
+filter.addWords('foda-se', 'negro', 'ridiculo', 'odio'); 
 
+
+// --- FUNÇÃO PEGAR FEEDBACK ---
 async function getFeedbacks(req, res) {
   try {
     const result = await db.query('SELECT * FROM feedbacks ORDER BY data_sugestao DESC');
@@ -10,13 +15,20 @@ async function getFeedbacks(req, res) {
   }
 }
 
-// Função para criar um novo feedback
+// --- FUNÇÃO CREATE (ATUALIZADA COM FILTRO) ---
 async function createFeedback(req, res) {
   const userId = req.userId;
   const { titulo, descricao } = req.body;
 
   if (!titulo || !descricao) {
     return res.status(400).json({ message: 'O título e a descrição são obrigatórios.' });
+  }
+
+  // 3. VERIFICAÇÃO DE CONTEÚDO IMPRÓPRIO
+  if (filter.isProfane(titulo) || filter.isProfane(descricao)) {
+    return res.status(400).json({ 
+      message: 'O seu feedback contém linguagem imprópria e não foi enviado.' 
+    });
   }
 
   try {
@@ -41,11 +53,10 @@ async function createFeedback(req, res) {
   }
 }
 
-
-// Função para (ADMIN) atualizar o status de um feedback
+// --- FUNÇÃO UPDATE STATUS (MANTIDA) ---
 async function updateFeedbackStatus(req, res) {
-  const { id } = req.params;
-  const { status } = req.body;
+  const { id } = req.params; 
+  const { status } = req.body; 
 
   if (!status || !['analisando', 'desenvolvendo', 'entregue'].includes(status)) {
     return res.status(400).json({ message: 'Status inválido.' });
@@ -69,7 +80,6 @@ async function updateFeedbackStatus(req, res) {
   }
 }
 
-// --- EXPORTAÇÃO ---
 module.exports = {
   getFeedbacks,
   createFeedback,

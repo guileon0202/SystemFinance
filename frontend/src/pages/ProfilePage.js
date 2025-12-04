@@ -17,14 +17,12 @@ const ProfilePage = () => {
     const [editNome, setEditNome] = useState('');
     const [editEmail, setEditEmail] = useState('');
 
-    // --- 1. NOVOS ESTADOS PARA O FORMULÁRIO DE ALTERAR SENHA ---
+    // Estados para o modo de ALTERAR SENHA
     const [senhaAntiga, setSenhaAntiga] = useState('');
     const [novaSenha, setNovaSenha] = useState('');
     const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
     const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
-
-    // Busca o usuário do localStorage para o Header
     useEffect(() => {
         try {
             const storedUser = localStorage.getItem('user');
@@ -69,21 +67,19 @@ const ProfilePage = () => {
         navigate('/login');
     };
 
-    // --- FUNÇÃO PARA ATIVAR O MODO DE EDIÇÃO ---
+    // --- FUNÇÕES DE EDIÇÃO DE PERFIL ---
     const handleEditClick = () => {
         setEditNome(profileData.nome);
         setEditEmail(profileData.email);
         setIsEditing(true);
     };
 
-    // --- FUNÇÃO PARA CANCELAR A EDIÇÃO ---
     const handleCancelEdit = () => {
         setIsEditing(false);
         setEditNome(profileData.nome);
         setEditEmail(profileData.email);
     };
 
-    // --- FUNÇÃO PARA SALVAR AS ALTERAÇÕES DO PERFIL ---
     const handleSaveProfile = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -107,7 +103,7 @@ const ProfilePage = () => {
         }
     };
 
-    // --- 2. FUNÇÃO PARA LIDAR COM A ALTERAÇÃO DE SENHA ---
+    // --- FUNÇÃO DE ALTERAR SENHA ---
     const handleChangePassword = async (e) => {
         e.preventDefault();
         
@@ -124,7 +120,6 @@ const ProfilePage = () => {
             });
 
             toast.success('Senha alterada com sucesso!');
-            // Limpa os campos após o sucesso
             setSenhaAntiga('');
             setNovaSenha('');
             setConfirmarNovaSenha('');
@@ -136,10 +131,41 @@ const ProfilePage = () => {
         }
     };
 
+    // --- FUNÇÃO: EXCLUIR CONTA ---
+    const handleDeleteAccount = () => {
+        toast(
+            ({ closeToast }) => (
+                <div>
+                  <p style={{color: '#721c24', fontWeight: 'bold'}}>ATENÇÃO: Isso apagará todos os seus dados permanentemente!</p>
+                  <p>Tem certeza absoluta?</p>
+                  <button onClick={async () => {
+                      try {
+                        await api.delete('/users/profile');
+                        localStorage.clear(); 
+                        toast.success('Sua conta foi excluída com sucesso.');
+                        navigate('/register'); 
+                      } catch (err) {
+                        console.error("Erro ao excluir conta:", err);
+                        toast.error('Não foi possível excluir a conta.');
+                      }
+                      closeToast(); 
+                    }}
+                    style={{ marginRight: '10px', padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+                  >Sim, excluir tudo</button>
+                  <button onClick={closeToast} style={{ padding: '5px 10px', cursor: 'pointer'}}>Cancelar</button>
+                </div>
+            ), { 
+                position: "top-center",
+                autoClose: false,
+                closeOnClick: false,
+                draggable: false,
+                closeButton: false,
+             }
+        );
+    };
 
-    if (!user) {
-         return <div className="loading-fullpage">Carregando...</div>;
-    }
+
+    if (!user) return <div className="loading-fullpage">Carregando...</div>;
 
     return (
         <div className="profile-page-wrapper">
@@ -156,7 +182,6 @@ const ProfilePage = () => {
                     <p className="error-message">{error}</p>
                 ) : profileData ? (
                     <>
-                        {/* --- Card 1: Editar Perfil --- */}
                         <div className="profile-details-card">
                             {!isEditing ? (
                                 <>
@@ -196,42 +221,20 @@ const ProfilePage = () => {
                             )}
                         </div>
 
-                        {/* --- Card 2: Alterar Senha (NOVO) --- */}
                         <div className="profile-details-card">
                             <h3>Alterar Senha</h3>
                             <form onSubmit={handleChangePassword}>
                                 <div className="form-group">
                                     <label htmlFor="senhaAntiga">Senha Atual</label>
-                                    <input
-                                        type="password"
-                                        id="senhaAntiga"
-                                        value={senhaAntiga}
-                                        onChange={(e) => setSenhaAntiga(e.target.value)}
-                                        placeholder="Digite sua senha atual"
-                                        required
-                                    />
+                                    <input type="password" id="senhaAntiga" value={senhaAntiga} onChange={(e) => setSenhaAntiga(e.target.value)} placeholder="Digite sua senha atual" required />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="novaSenha">Nova Senha</label>
-                                    <input
-                                        type="password"
-                                        id="novaSenha"
-                                        value={novaSenha}
-                                        onChange={(e) => setNovaSenha(e.target.value)}
-                                        placeholder="Digite a nova senha"
-                                        required
-                                    />
+                                    <input type="password" id="novaSenha" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} placeholder="Digite a nova senha" required />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="confirmarNovaSenha">Confirmar Nova Senha</label>
-                                    <input
-                                        type="password"
-                                        id="confirmarNovaSenha"
-                                        value={confirmarNovaSenha}
-                                        onChange={(e) => setConfirmarNovaSenha(e.target.value)}
-                                        placeholder="Confirme a nova senha"
-                                        required
-                                    />
+                                    <input type="password" id="confirmarNovaSenha" value={confirmarNovaSenha} onChange={(e) => setConfirmarNovaSenha(e.target.value)} placeholder="Confirme a nova senha" required />
                                 </div>
                                 <div className="profile-actions">
                                     <button type="submit" className="profile-button" disabled={isPasswordLoading}>
@@ -240,6 +243,23 @@ const ProfilePage = () => {
                                 </div>
                             </form>
                         </div>
+
+                        <div className="profile-details-card danger-zone" style={{marginTop: '2rem', border: '1px solid #dc3545'}}>
+                            <h3 style={{color: '#dc3545'}}>Zona de Perigo</h3>
+                            <p style={{fontSize: '0.9rem', color: '#6c757d', marginBottom: '1rem'}}>
+                                Uma vez que você excluir sua conta, não há como voltar atrás. Por favor, tenha certeza.
+                            </p>
+                            <div className="profile-actions" style={{borderTop: 'none', padding: 0}}>
+                                <button 
+                                    className="profile-button delete-account-btn" 
+                                    onClick={handleDeleteAccount}
+                                    style={{backgroundColor: '#fff', color: '#dc3545', borderColor: '#dc3545'}}
+                                >
+                                    Excluir Minha Conta
+                                </button>
+                            </div>
+                        </div>
+
                     </>
                 ) : (
                      <p>Nenhum dado de perfil encontrado.</p>

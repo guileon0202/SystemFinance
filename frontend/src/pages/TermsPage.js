@@ -40,7 +40,7 @@ const TermsPage = () => {
             <p>Reservamo-nos o direito de modificar estes termos a qualquer momento. Notificaremos sobre as alterações publicando os novos termos no site. É sua responsabilidade revisar os Termos de Uso periodicamente.</p>
 
             <h4>7. Contato</h4>
-            <p>Se você tiver alguma dúvida sobre estes Termos, entre em contato conosco pelo e-mail: [Seu E-mail de Contato].</p>
+            <p>Se você tiver alguma dúvida sobre estes Termos, entre em contato conosco pelo e-mail: webfinancepfc@gmail.com.</p>
             
             <br />
             <Link to="/register">Voltar para a página de Cadastro</Link>

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
-const adminMiddleware = require('../middleware/adminMiddleware');// MIDDLEWARE DE ADMIN
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 // 2. IMPORTE a nova função
 const { 

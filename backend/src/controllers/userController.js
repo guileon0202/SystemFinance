@@ -129,7 +129,7 @@ async function updateUserProfile(req, res) {
   }
 }
 
-// --- FUNÇÃO NOVA: ALTERAR SENHA (LOGADO) ---
+// --- FUNÇÃO: ALTERAR SENHA (LOGADO) ---
 async function changePassword(req, res) {
   const userId = req.userId;
   const { senhaAntiga, novaSenha } = req.body;
@@ -163,6 +163,27 @@ async function changePassword(req, res) {
     res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 }
+//FUNCÃO: EXCLUIR USUÁRIO E DADOS RELACIONADOS
+async function deleteUser(req, res) {
+  const userId = req.userId; // ID do usuário logado (vem do token)
+
+  try {
+    await db.query('DELETE FROM feedbacks WHERE user_id = $1', [userId]);
+    await db.query('DELETE FROM transactions WHERE user_id = $1', [userId]);
+
+    const result = await db.query('DELETE FROM users WHERE id = $1 RETURNING *', [userId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    res.status(200).json({ message: 'Conta excluída com sucesso.' });
+
+  } catch (error) {
+    console.error('Erro ao excluir conta:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao excluir conta.' });
+  }
+}
 
 // --- EXPORTAÇÃO DE TODAS AS FUNÇÕES ---
 module.exports = {
@@ -173,4 +194,5 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   changePassword,
+  deleteUser,
 };

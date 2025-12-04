@@ -3,7 +3,7 @@ const router = express.Router();
 
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Importa todas as funções necessárias do controller
+// Importa funções necessárias do controller
 const { 
     register, 
     login, 
@@ -11,7 +11,8 @@ const {
     resetPassword, 
     getUserProfile,
     updateUserProfile,
-    changePassword
+    changePassword,
+    deleteUser
 } = require('../controllers/userController');
 
 
@@ -24,12 +25,9 @@ router.post('/reset-password', resetPassword);
 
 // --- Rotas Privadas (precisam de login) ---
 router.use(authMiddleware);
-
 router.get('/profile', getUserProfile);
 router.put('/profile', updateUserProfile);
-
-// Rota nova para alterar a senha
 router.put('/change-password', changePassword);
-
+router.delete('/profile', deleteUser);
 
 module.exports = router;

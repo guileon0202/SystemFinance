@@ -125,8 +125,6 @@ const BalanceamentoPage = () => {
                     <button onClick={() => setActivePeriod('weekly')} className={activePeriod === 'weekly' ? 'active' : ''}>Última Semana</button>
                     <button onClick={() => setActivePeriod('monthly')} className={activePeriod === 'monthly' ? 'active' : ''}>Último Mês</button>
                     <button onClick={() => setActivePeriod('yearly')} className={activePeriod === 'yearly' ? 'active' : ''}>Último Ano</button>
-                    <button>Todos os Períodos</button>
-                    <button>Período Personalizado</button>
                 </div>
 
                 <div className="balance-summary-grid">
