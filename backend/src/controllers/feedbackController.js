@@ -1,87 +1,86 @@
-const db = require('../db/db');
 const Filter = require('bad-words');
 const filter = new Filter();
-filter.addWords('foda-se', 'negro', 'ridiculo', 'odio'); 
+filter.addWords('foda-se', 'negro', 'ridiculo', 'odio');
 
 
-// --- FUNÇÃO PEGAR FEEDBACK ---
+const FeedbackRepository = require('../models/FeedbackRepository');
+const UserRepository = require('../models/UserRepository');
+
+
+// FUNÇÃO PEGAR FEEDBACK
 async function getFeedbacks(req, res) {
-  try {
-    const result = await db.query('SELECT * FROM feedbacks ORDER BY data_sugestao DESC');
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Erro ao buscar feedbacks:', error);
-    res.status(500).json({ message: 'Erro interno do servidor.' });
-  }
+    try {
+        const feedbacks = await FeedbackRepository.getAllFeedbacks();
+        res.status(200).json(feedbacks);
+    } catch (error) {
+        console.error('Erro ao buscar feedbacks:', error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
 }
 
-// --- FUNÇÃO CREATE (ATUALIZADA COM FILTRO) ---
+// FUNÇÃO CREATE
 async function createFeedback(req, res) {
-  const userId = req.userId;
-  const { titulo, descricao } = req.body;
+    const userId = req.userId;
+    const { titulo, descricao } = req.body;
 
-  if (!titulo || !descricao) {
-    return res.status(400).json({ message: 'O título e a descrição são obrigatórios.' });
-  }
-
-  // 3. VERIFICAÇÃO DE CONTEÚDO IMPRÓPRIO
-  if (filter.isProfane(titulo) || filter.isProfane(descricao)) {
-    return res.status(400).json({ 
-      message: 'O seu feedback contém linguagem imprópria e não foi enviado.' 
-    });
-  }
-
-  try {
-    const userResult = await db.query('SELECT nome FROM users WHERE id = $1', [userId]);
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    if (!titulo || !descricao) {
+        return res.status(400).json({ message: 'O título e a descrição são obrigatórios.' });
     }
-    const autor = userResult.rows[0].nome;
 
-    const newFeedback = await db.query(
-      `INSERT INTO feedbacks (titulo, descricao, autor, status, user_id) 
-       VALUES ($1, $2, $3, 'analisando', $4) 
-       RETURNING *`,
-      [titulo, descricao, autor, userId]
-    );
+    if (filter.isProfane(titulo) || filter.isProfane(descricao)) {
+        return res.status(400).json({
+            message: 'O seu feedback contém linguagem imprópria e não foi enviado.'
+        });
+    }
 
-    res.status(201).json(newFeedback.rows[0]);
+    try {
+        const user = await UserRepository.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+        const autor = user.nome;
 
-  } catch (error) {
-    console.error('Erro ao criar feedback:', error);
-    res.status(500).json({ message: 'Erro interno do servidor.' });
-  }
+        const newFeedback = await FeedbackRepository.createFeedback(
+            titulo,
+            descricao,
+            autor,
+            userId
+        );
+
+        res.status(201).json(newFeedback);
+
+    } catch (error) {
+        console.error('Erro ao criar feedback:', error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
 }
 
-// --- FUNÇÃO UPDATE STATUS (MANTIDA) ---
+//  FUNÇÃO UPDATE STATUS
 async function updateFeedbackStatus(req, res) {
-  const { id } = req.params; 
-  const { status } = req.body; 
+    const { id } = req.params;
+    const { status } = req.body;
 
-  if (!status || !['analisando', 'desenvolvendo', 'entregue'].includes(status)) {
-    return res.status(400).json({ message: 'Status inválido.' });
-  }
-
-  try {
-    const result = await db.query(
-      'UPDATE feedbacks SET status = $1 WHERE id = $2 RETURNING *',
-      [status, id]
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: 'Feedback não encontrado.' });
+    if (!status || !['analisando', 'desenvolvendo', 'entregue'].includes(status)) {
+        return res.status(400).json({ message: 'Status inválido.' });
     }
 
-    res.status(200).json(result.rows[0]);
+    try {
+        const updatedFeedback = await FeedbackRepository.updateStatus(id, status);
 
-  } catch (error) {
-    console.error('Erro ao atualizar status do feedback:', error);
-    res.status(500).json({ message: 'Erro interno do servidor.' });
-  }
+        if (!updatedFeedback) {
+            return res.status(404).json({ message: 'Feedback não encontrado.' });
+        }
+
+        res.status(200).json(updatedFeedback);
+
+    } catch (error) {
+        console.error('Erro ao atualizar status do feedback:', error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
 }
 
 module.exports = {
-  getFeedbacks,
-  createFeedback,
-  updateFeedbackStatus,
+    getFeedbacks,
+    createFeedback,
+    updateFeedbackStatus,
 };
